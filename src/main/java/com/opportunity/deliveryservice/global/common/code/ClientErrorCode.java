@@ -1,0 +1,44 @@
+package com.opportunity.deliveryservice.global.common.code;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * 클라이언트 요청에 대한 에러 코드를 정의합니다.
+ *
+ *  형식: OPPTY-[도메인코드]-[HTTP 상태코드]-[에러번호]
+ * 	도메인코드
+ * 	HTTP 상태코드 (3자리)
+ *	에러번호 (3자리): 도메인 내 개별 에러 식별 번호
+ *
+ * <p>
+ */
+@Getter
+@RequiredArgsConstructor
+public enum ClientErrorCode implements BaseErrorCode {
+
+	// 400 Bad Request
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "OPPTY-CMN-400-01", "입력값이 올바르지 않습니다."),
+	INVALID_JSON_FORMAT(HttpStatus.BAD_REQUEST, "OPPTY-CMN-400-02", "JSON 형식이 유효하지 않습니다."),
+	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "OPPTY-CMN-405-01", "허용되지 않은 HTTP 메서드입니다."),
+
+	// 401 Unauthorized
+	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "OPPTY-CMN-401-01", "인증이 필요한 요청입니다."),
+	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "OPPTY-CMN-401-02", "유효하지 않은 인증 토큰입니다."),
+	EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "OPPTY-CMN-401-03", "만료된 인증 토큰입니다."),
+
+	// 403 Forbidden
+	FORBIDDEN(HttpStatus.FORBIDDEN, "OPPTY-CMN-403-01", "해당 요청에 대한 접근 권한이 없습니다."),
+
+	// 404 Not Found
+	RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-CMN-404-01", "요청한 리소스를 찾을 수 없습니다."),
+
+	// 409 Conflict
+	CONFLICT(HttpStatus.CONFLICT, "OPPTY-CMN-409-01", "요청이 서버의 현재 상태와 충돌합니다.");
+
+	private final HttpStatus httpStatus;
+	private final String code;
+	private final String message;
+}
