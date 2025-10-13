@@ -50,12 +50,20 @@ public class ProductService {
 	@Transactional
 	public void deleteProduct(UUID productId, Long userId) {
 		validate();
+
 		Product product = getProduct(productId);
 		product.softDelete(userId);
 	}
+	@Transactional
+	public void updateProductVisibility(UUID productId) {
+		validate();
+
+		Product product = getProduct(productId);
+		product.changeVisible();
+	}
 
 	@Transactional(readOnly = true)
-	public Product getProductDetail(UUID productId, Long userId) {
+	public Product getProductDetail(UUID productId) {
 		validate();
 
 		return getProduct(productId);

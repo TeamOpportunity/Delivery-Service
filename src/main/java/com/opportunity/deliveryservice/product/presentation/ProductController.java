@@ -62,8 +62,17 @@ public class ProductController {
 		@PathVariable UUID productId
 		// @AuthenticationPrincipal PrincipalDetails principalDetails
 	){
-		GetProductResponse response = GetProductResponse.of(productService.getProductDetail(productId, 1L)); //todo- userId 변경
+		GetProductResponse response = GetProductResponse.of(productService.getProductDetail(productId));
 		return ApiResponse.success(response);
+	}
+
+	@PutMapping("/{productId}/visibility")
+	public ApiResponse<?> updateProductVisibility(
+		@PathVariable UUID productId
+		// @AuthenticationPrincipal PrincipalDetails principalDetails
+	){
+		productService.updateProductVisibility(productId);
+		return ApiResponse.noContent();
 	}
 
 }
