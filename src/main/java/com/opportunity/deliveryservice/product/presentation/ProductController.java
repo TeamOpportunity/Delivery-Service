@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,7 +47,7 @@ public class ProductController {
 		return ApiResponse.noContent();
 	}
 
-	@DeleteMapping("/{productId}")
+	@PatchMapping("/{productId}")
 	public ApiResponse<?> deleteProduct(
 		@PathVariable UUID productId
 		// @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -65,7 +66,7 @@ public class ProductController {
 		return ApiResponse.success(response);
 	}
 
-	@PutMapping("/{productId}/visibility")
+	@PatchMapping("/{productId}/visibility")
 	public ApiResponse<?> updateProductVisibility(
 		@PathVariable UUID productId
 		// @AuthenticationPrincipal PrincipalDetails principalDetails

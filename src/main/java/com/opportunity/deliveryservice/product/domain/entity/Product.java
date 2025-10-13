@@ -50,7 +50,7 @@ public class Product extends BaseEntity {
 	private String image;
 
 	@Column(nullable = false)
-	private boolean isVisible = false;
+	private boolean isVisible = true;
 
 	// @ManyToOne
 	// private Store store
