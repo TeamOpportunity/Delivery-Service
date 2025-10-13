@@ -6,6 +6,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.opportunity.deliveryservice.gemini.application.service.GeminiService;
+import com.opportunity.deliveryservice.gemini.domain.entity.AiRequestHistory;
+import com.opportunity.deliveryservice.gemini.infrastructure.dto.GeminiRequest;
 import com.opportunity.deliveryservice.global.common.code.BaseErrorCode;
 import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
@@ -19,22 +22,25 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-	private static ProductRepository productRepository;
-
+	private final ProductRepository productRepository;
+	private final GeminiService geminiService;
 
 	@Transactional
 	public void createProduct(CreateProductRequest request) {
 		validate();
 
-		String description = request.useAI() ? generateDescription(request.AiPrompt()) :request.description();
-
 		Product newProduct = Product.builder()
 			.title(request.title())
 			.price(request.price())
-			.description(description)
+			.description(request.description())
 			.image(request.image())
 			.category(request.category())
 			.build();
+
+		if(request.useAI()){
+			String description = generateDescription(request.AiPrompt(), newProduct);
+			newProduct.setDescription(description);
+		}
 
 		productRepository.save(newProduct);
 	}
@@ -76,13 +82,12 @@ public class ProductService {
 	}
 
 
-	private String generateDescription(String prompt){
+	private String generateDescription(String prompt, Product product){
 		if (prompt == null || prompt.isBlank()) {
 			throw new OpptyException(ClientErrorCode.INVALID_INPUT_VALUE);
 		}
 
-		//todo ai 사용
-		return "";
+		return geminiService.createProductDescription(prompt, product);
 	}
 
 	private void validate(){

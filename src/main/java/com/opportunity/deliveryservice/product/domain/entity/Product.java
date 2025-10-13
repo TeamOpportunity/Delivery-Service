@@ -65,6 +65,10 @@ public class Product extends BaseEntity {
 		this.image = image;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public void changeVisible(){
 		this.isVisible = !this.isVisible;
 	}
