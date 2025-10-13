@@ -31,7 +31,7 @@ public class ProductController {
 	@PostMapping
 	public ApiResponse<?> createProduct(
 		@RequestBody CreateProductRequest request
-		// @AuthenticationPrincipal PrincipalDetails principalDetails
+		// @AuthenticationPrincipal
 	) {
 		productService.createProduct(request);
 		return ApiResponse.noContent();
@@ -41,7 +41,7 @@ public class ProductController {
 	public ApiResponse<?> updateProduct(
 		@PathVariable UUID productId,
 		@RequestBody UpdateProductRequest request
-		// @AuthenticationPrincipal PrincipalDetails principalDetails
+		// @AuthenticationPrincipal
 	){
 		productService.updateProduct(request, productId);
 		return ApiResponse.noContent();
@@ -50,7 +50,7 @@ public class ProductController {
 	@PatchMapping("/{productId}")
 	public ApiResponse<?> deleteProduct(
 		@PathVariable UUID productId
-		// @AuthenticationPrincipal PrincipalDetails principalDetails
+		// @AuthenticationPrincipal
 	){
 		productService.deleteProduct(productId, 1L); //todo- userId 변경
 		return ApiResponse.noContent();
@@ -60,7 +60,7 @@ public class ProductController {
 	@GetMapping("/{productId}")
 	public ApiResponse<GetProductResponse> getProductDetail(
 		@PathVariable UUID productId
-		// @AuthenticationPrincipal PrincipalDetails principalDetails
+		// @AuthenticationPrincipal
 	){
 		GetProductResponse response = GetProductResponse.of(productService.getProductDetail(productId));
 		return ApiResponse.success(response);
@@ -69,7 +69,7 @@ public class ProductController {
 	@PatchMapping("/{productId}/visibility")
 	public ApiResponse<?> updateProductVisibility(
 		@PathVariable UUID productId
-		// @AuthenticationPrincipal PrincipalDetails principalDetails
+		// @AuthenticationPrincipal
 	){
 		productService.updateProductVisibility(productId);
 		return ApiResponse.noContent();
