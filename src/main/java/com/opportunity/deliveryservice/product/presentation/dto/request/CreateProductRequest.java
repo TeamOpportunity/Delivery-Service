@@ -15,7 +15,7 @@ public record CreateProductRequest (
 	Boolean useAI,
 
 	@Nullable
-	String AiPrompt
+	String aiPrompt
 ){
 
 }

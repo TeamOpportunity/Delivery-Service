@@ -1,15 +1,11 @@
 package com.opportunity.deliveryservice.product.application.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.opportunity.deliveryservice.gemini.application.service.GeminiService;
-import com.opportunity.deliveryservice.gemini.domain.entity.AiRequestHistory;
-import com.opportunity.deliveryservice.gemini.infrastructure.dto.GeminiRequest;
-import com.opportunity.deliveryservice.global.common.code.BaseErrorCode;
 import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
 import com.opportunity.deliveryservice.product.domain.entity.Product;
@@ -38,7 +34,7 @@ public class ProductService {
 			.build();
 
 		if(request.useAI()){
-			String description = generateDescription(request.AiPrompt(), newProduct);
+			String description = generateDescription(request.aiPrompt(), newProduct);
 			newProduct.setDescription(description);
 		}
 
