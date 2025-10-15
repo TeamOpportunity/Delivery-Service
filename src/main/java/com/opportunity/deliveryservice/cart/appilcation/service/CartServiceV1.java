@@ -1,6 +1,7 @@
 package com.opportunity.deliveryservice.cart.appilcation.service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,7 @@ import com.opportunity.deliveryservice.cart.domain.entity.CartProducts;
 import com.opportunity.deliveryservice.cart.domain.repositoy.CartProductsRepository;
 import com.opportunity.deliveryservice.cart.domain.repositoy.CartRepository;
 import com.opportunity.deliveryservice.cart.presentation.dto.request.ReqCartAddProductDto;
+import com.opportunity.deliveryservice.cart.presentation.dto.request.ReqCartUpdateQuantityDto;
 import com.opportunity.deliveryservice.cart.presentation.dto.response.ResCartGetByUserDto;
 import com.opportunity.deliveryservice.cart.presentation.dto.response.ResCartProductsDto;
 import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
@@ -68,6 +70,28 @@ public class CartServiceV1 {
 
 		return ResCartProductsDto.fromEntity(cartProduct);
 	}
+
+	// 장바구니에 담긴 상품 수량 변경
+	@Transactional
+	public ResCartProductsDto updateProductQuantity(Long userId, UUID productId, ReqCartUpdateQuantityDto request) {
+		// 유저 cart 조회 (없으면 생성)
+		Cart cart = findCart(userId);
+
+		// 유저 장바구니에서 상품 찾기
+		CartProducts cartProducts = cartProductsRepository.findByCartIdAndProductId(cart.getId(), productId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND));
+
+		// 수량이 1보다 적으면 throw
+		if (request.getQuantity() < 1) {
+			throw new OpptyException(ClientErrorCode.INVALID_INPUT_VALUE);
+		}
+
+		// 수량이 1 이상이면 업데이트
+		cartProducts.updateQuantity(request.getQuantity());
+
+		return ResCartProductsDto.fromEntity(cartProducts);
+	}
+
 
 	private Cart findCart(Long userId) {
 		return cartRepository.findByUserId(userId)

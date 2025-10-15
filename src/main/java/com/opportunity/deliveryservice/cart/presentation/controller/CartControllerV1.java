@@ -1,6 +1,10 @@
 package com.opportunity.deliveryservice.cart.presentation.controller;
 
+import java.util.UUID;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.opportunity.deliveryservice.cart.appilcation.service.CartServiceV1;
 import com.opportunity.deliveryservice.cart.presentation.dto.request.ReqCartAddProductDto;
+import com.opportunity.deliveryservice.cart.presentation.dto.request.ReqCartUpdateQuantityDto;
 import com.opportunity.deliveryservice.cart.presentation.dto.response.ResCartGetByUserDto;
 import com.opportunity.deliveryservice.cart.presentation.dto.response.ResCartProductsDto;
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
@@ -36,5 +41,17 @@ public class CartControllerV1 {
 		Long tempUserId = 1L;
 		ResCartProductsDto addedProduct = cartServiceV1.addProductToCart(tempUserId, product);
 		return ApiResponse.success(addedProduct);
+	}
+
+	// 장바구니에 담긴 상품 수량 변경
+	@PatchMapping("/products/{productId}")
+	public ApiResponse<ResCartProductsDto> updateProductQuantity(
+		@PathVariable UUID productId,
+		@RequestBody ReqCartUpdateQuantityDto request
+	) {
+		// 임시 userId 사용
+		Long tempUserId = 1L;
+		ResCartProductsDto updatedProduct = cartServiceV1.updateProductQuantity(tempUserId, productId, request);
+		return ApiResponse.success(updatedProduct);
 	}
 }
