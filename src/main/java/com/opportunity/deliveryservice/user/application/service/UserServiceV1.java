@@ -2,6 +2,7 @@ package com.opportunity.deliveryservice.user.application.service;
 
 import java.time.Duration;
 
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -226,9 +227,14 @@ public class UserServiceV1 {
 
 		Session session = entityManager.unwrap(Session.class);
 
+		Filter userFilter = session.enableFilter("deletedUserFilter");
+		userFilter.setParameter("isDeleted", true);
+
+		Filter addressFilter = session.enableFilter("deletedAddressFilter");
+		addressFilter.setParameter("isDeleted", true);
 		// 1. 필터 활성화 및 파라미터 설정
-		session.enableFilter("softDeleteFilter")
-			.setParameter("isDeleted", true); // isDeleted=true 시 deleted_at IS NULL 조건 무시
+		// session.enableFilter("softDeleteFilter")
+		// 	.setParameter("isDeleted", true); // isDeleted=true 시 deleted_at IS NULL 조건 무시
 
 		Pageable pageable = requestDto.toPageable();
 		String keyword = requestDto.getKeyword();
@@ -244,7 +250,8 @@ public class UserServiceV1 {
 			return userRepository.findUsersByAdminCriteria(role, keyword, pageable);
 		} finally {
 			// 3. 필터 비활성화
-			session.disableFilter("softDeleteFilter");
+			session.disableFilter("deletedUserFilter");
+			session.disableFilter("deletedAddressFilter");
 		}
 
 	}
