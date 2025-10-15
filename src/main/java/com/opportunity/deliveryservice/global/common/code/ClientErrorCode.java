@@ -23,6 +23,8 @@ public enum ClientErrorCode implements BaseErrorCode {
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "OPPTY-CMN-400-01", "입력값이 올바르지 않습니다."),
 	INVALID_JSON_FORMAT(HttpStatus.BAD_REQUEST, "OPPTY-CMN-400-02", "JSON 형식이 유효하지 않습니다."),
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "OPPTY-CMN-405-01", "허용되지 않은 HTTP 메서드입니다."),
+	INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "OPPTY-PAY-400-01", "요청 금액과 승인 금액이 다릅니다."),
+
 
 	// 401 Unauthorized
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "OPPTY-CMN-401-01", "인증이 필요한 요청입니다."),
