@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,5 +40,16 @@ public class CartProducts {
 
 	public void setCart(Cart cart) {
 		this.cart = cart;
+	}
+
+	public void updateQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
+
+	@Builder
+	private CartProducts(Cart cart, Product product, Long quantity) {
+		this.cart = cart;
+		this.product = product;
+		this.quantity = quantity;
 	}
 }

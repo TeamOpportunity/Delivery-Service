@@ -22,7 +22,7 @@ public class ResCartProductsDto {
 	public static ResCartProductsDto fromEntity(CartProducts cartProducts) {
 		Product product = cartProducts.getProduct();
 		return 	ResCartProductsDto.builder()
-			.productId(cartProducts.getId())
+			.productId(product.getId())
 			.title(product.getTitle())
 			.price(product.getPrice())
 			.quantity(cartProducts.getQuantity())
