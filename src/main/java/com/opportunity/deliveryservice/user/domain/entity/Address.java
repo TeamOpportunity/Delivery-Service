@@ -3,6 +3,8 @@ package com.opportunity.deliveryservice.user.domain.entity;
 import java.util.UUID;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import com.opportunity.deliveryservice.user.presentation.dto.request.AddressRequestDto;
