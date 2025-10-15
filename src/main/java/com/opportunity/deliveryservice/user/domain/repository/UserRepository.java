@@ -39,11 +39,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	// 관리자 전용 조회(Soft Delete 포함) - JPQL로 명시적 구현
 	@Query(value = """
-		SELECT u 
+		SELECT DISTINCT u 
 		FROM User u 
 		WHERE 
-		    (u.deletedAt IS NULL OR u.deletedAt IS NOT NULL)  /* <--- deletedAt 조건 명시적으로 해제 */
-		    AND (:keyword IS NULL OR u.username LIKE :keyword OR u.email LIKE :keyword)
+		    (:keyword IS NULL OR u.username LIKE :keyword OR u.email LIKE :keyword)
 		    AND (:role IS NULL OR u.role = :role)
 		ORDER BY u.createdAt DESC
 		""")
