@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import com.opportunity.deliveryservice.user.presentation.dto.request.UserSignupRequestDto;
@@ -14,7 +16,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,12 +26,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Filter(name = "softDeleteFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 접근 수준을 PROTECTED로 설정
 // SQL Delete문을 실행하지않고(삭제 처리 하지않고) Update(soft delete)문 실행
+
 @SQLDelete(sql = "UPDATE p_users SET deleted_at = NOW() WHERE id = ?")
+@FilterDef(name = "deletedUserFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedUserFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
+
 // 필터 정의: "softDeleteFilter"라는 이름과 isDeleted 매개변수 정의
 @Table(name = "p_users")
 @Entity
@@ -53,8 +57,8 @@ public class User extends TimeStamped {
 	@Enumerated(value = EnumType.STRING)
 	private UserRoleEnum role;
 
-	@Filter(name = "softDeleteFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Filter(name = "deletedAddressFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
 	private List<Address> addressList = new ArrayList<>();
 
 	public User(UserSignupRequestDto requestDto, String encodedPassword) {

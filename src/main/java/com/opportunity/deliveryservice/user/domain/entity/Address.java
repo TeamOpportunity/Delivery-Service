@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // 필터 조건: isDeleted가 true일 경우 'deleted_at IS NULL' 조건을 무시함
-@Filter(name = "softDeleteFilter", condition = "deleted_at IS NULL OR  :isDeleted = true")
+// @Filter(name = "softDeleteFilter", condition = "deleted_at IS NULL OR  :isDeleted = true")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,6 +30,9 @@ import lombok.Setter;
 @Table(name = "p_user_address")
 // 삭제 처리 하지않고 update(soft delete) 처리
 @SQLDelete(sql = "update p_user_address set deleted_at = NOW() where id = ?")
+@FilterDef(name = "deletedAddressFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedAddressFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
+
 public class Address extends TimeStamped {
 
 	@Id // 기본키 & 자동생성: UUID
