@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.opportunity'
 version = '0.0.1-SNAPSHOT'
-description = 'deliveryservice'
+description = 'delivery-service'
 
 java {
     toolchain {
