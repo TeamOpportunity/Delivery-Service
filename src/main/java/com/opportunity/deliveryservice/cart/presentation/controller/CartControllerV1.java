@@ -2,6 +2,7 @@ package com.opportunity.deliveryservice.cart.presentation.controller;
 
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,5 +54,14 @@ public class CartControllerV1 {
 		Long tempUserId = 1L;
 		ResCartProductsDto updatedProduct = cartServiceV1.updateProductQuantity(tempUserId, productId, request);
 		return ApiResponse.success(updatedProduct);
+	}
+
+	// 장바구니 상품 삭제
+	@DeleteMapping("/products/{productId}")
+	public ApiResponse<Void> deleteProductFromCart(@PathVariable UUID productId) {
+		// 임시 userId 사용
+		Long tempUserId = 1L;
+		cartServiceV1.deleteProductFromCart(tempUserId, productId);
+		return ApiResponse.noContent();
 	}
 }

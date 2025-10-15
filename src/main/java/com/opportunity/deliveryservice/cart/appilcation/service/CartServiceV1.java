@@ -78,7 +78,7 @@ public class CartServiceV1 {
 		Cart cart = findCart(userId);
 
 		// 유저 장바구니에서 상품 찾기
-		CartProducts cartProducts = cartProductsRepository.findByCartIdAndProductId(cart.getId(), productId)
+		CartProducts cartProduct = cartProductsRepository.findByCartIdAndProductId(cart.getId(), productId)
 			.orElseThrow(() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND));
 
 		// 수량이 1보다 적으면 throw
@@ -87,11 +87,25 @@ public class CartServiceV1 {
 		}
 
 		// 수량이 1 이상이면 업데이트
-		cartProducts.updateQuantity(request.getQuantity());
+		cartProduct.updateQuantity(request.getQuantity());
 
-		return ResCartProductsDto.fromEntity(cartProducts);
+		return ResCartProductsDto.fromEntity(cartProduct);
 	}
 
+	// 장바구니 상품 삭제
+	@Transactional
+	public void deleteProductFromCart(Long userId, UUID productId) {
+		// 유저 cart 조회 (없으면 예외)
+		Cart cart = cartRepository.findByUserId(userId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND));
+
+		// 유저 장바구니에서 상품 찾기
+		CartProducts cartProduct = cartProductsRepository.findByCartIdAndProductId(cart.getId(), productId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND));
+
+		// 삭제
+		cartProductsRepository.delete(cartProduct);
+	}
 
 	private Cart findCart(Long userId) {
 		return cartRepository.findByUserId(userId)
