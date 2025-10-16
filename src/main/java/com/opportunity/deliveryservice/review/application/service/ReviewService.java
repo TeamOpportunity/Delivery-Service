@@ -54,7 +54,6 @@ public class ReviewService {
 		if(request.rating() != null){
 			updateReview.setRating(request.rating());
 		}
-		reviewRepository.save(updateReview);
 	}
 
 	@Transactional
@@ -65,8 +64,7 @@ public class ReviewService {
 		validateAuthorOrAdmin(deleteReview, currentUser);
 
 		//softDelete 처리
-		Review deletedReview = getReviewId(reviewId);
-		deletedReview.softDelete(currentUser.getId());
+		deleteReview.softDelete(currentUser.getId());
 
 	}
 

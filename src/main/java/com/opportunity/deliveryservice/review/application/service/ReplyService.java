@@ -35,9 +35,9 @@ public class ReplyService {
 			.review(review)
 			.build();
 
-		reviewRepository.save(review);
-
 		review.setReply(newReply);
+
+		reviewRepository.save(review);
 	}
 
 	@Transactional
@@ -63,6 +63,7 @@ public class ReplyService {
 		deletedReply.softDelete(userId);
 	}
 
+	@Transactional(readOnly = true)
 	public Reply getReply(UUID reviewId) {
 		validate();
 		Reply reply = getReviewId(reviewId).getReply();
