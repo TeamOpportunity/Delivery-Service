@@ -2,6 +2,7 @@ package com.opportunity.deliveryservice.search.service;
 
 import com.opportunity.deliveryservice.product.domain.entity.Product;
 import com.opportunity.deliveryservice.product.domain.repository.ProductRepository;
+import com.opportunity.deliveryservice.search.dto.response.ProductSearchPageDto;
 import com.opportunity.deliveryservice.search.dto.response.ProductSearchResultDto;
 import com.opportunity.deliveryservice.search.dto.response.SearchResultDto;
 import com.opportunity.deliveryservice.search.dto.response.StoreSearchResultDto;
@@ -17,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * 통합 검색 서비스
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -135,21 +133,47 @@ public class SearchService {
         return SearchResultDto.of(storeResults);
     }
 
-    public List<StoreSearchResultDto> searchStores(String keyword) {
-        log.info("가게 검색 시작 - 키워드: {}", keyword);
+    public SearchResultDto searchStores(String keyword, Pageable pageable) {
+        log.info("가게 검색 시작 - 키워드: {}, 페이지: {}, 크기: {}",
+                keyword, pageable.getPageNumber(), pageable.getPageSize());
 
-        List<Store> stores = storeRepository.findByNameContainingAndNotDeleted(keyword);
-        return stores.stream()
+        Page<Store> storesPage = storeRepository.findByNameContainingAndNotDeleted(keyword, pageable);
+
+        List<StoreSearchResultDto> storeResults = storesPage.getContent().stream()
                 .map(StoreSearchResultDto::from)
                 .collect(Collectors.toList());
+
+        log.info("가게 검색 완료 - 총 {}개 (페이지: {}/{})",
+                storesPage.getTotalElements(),
+                pageable.getPageNumber() + 1,
+                storesPage.getTotalPages());
+
+        return SearchResultDto.of(storeResults,
+                storesPage.getTotalElements(),
+                storesPage.getTotalPages(),
+                pageable.getPageNumber(),
+                pageable.getPageSize());
     }
 
-    public List<ProductSearchResultDto> searchProducts(String keyword) {
-        log.info("상품 검색 시작 - 키워드: {}", keyword);
+    public ProductSearchPageDto searchProducts(String keyword, Pageable pageable) {
+        log.info("상품 검색 시작 - 키워드: {}, 페이지: {}, 크기: {}",
+                keyword, pageable.getPageNumber(), pageable.getPageSize());
 
-        List<Product> products = productRepository.searchByTitle(keyword);
-        return products.stream()
+        Page<Product> productsPage = productRepository.searchByTitle(keyword, pageable);
+
+        List<ProductSearchResultDto> productResults = productsPage.getContent().stream()
                 .map(ProductSearchResultDto::from)
                 .collect(Collectors.toList());
+
+        log.info("상품 검색 완료 - 총 {}개 (페이지: {}/{})",
+                productsPage.getTotalElements(),
+                pageable.getPageNumber() + 1,
+                productsPage.getTotalPages());
+
+        return ProductSearchPageDto.of(productResults,
+                productsPage.getTotalElements(),
+                productsPage.getTotalPages(),
+                pageable.getPageNumber(),
+                pageable.getPageSize());
     }
 }
