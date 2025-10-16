@@ -244,8 +244,7 @@ public class UserServiceV1 {
 				keyword = "%" + keyword + "%";
 			}
 			// 모든 데이터를 조회하는 Custom Repository 메서드 사용
-			Page<User> userPage = userRepository.findUsersByAdminCriteria(role, keyword, pageable);
-			return userPage;
+			return	userRepository.findUsersByAdminCriteria(role, keyword, pageable);
 		} finally {
 			// 필터 비활성화
 			session.disableFilter("deletedUserFilter");
