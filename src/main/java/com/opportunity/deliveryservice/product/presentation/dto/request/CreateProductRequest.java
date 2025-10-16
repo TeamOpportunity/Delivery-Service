@@ -4,8 +4,10 @@ import com.opportunity.deliveryservice.product.domain.entity.ProductCategory;
 
 import jakarta.annotation.Nullable;
 
+import java.util.UUID;
+
 public record CreateProductRequest (
-	Long storeId,
+	UUID storeId,
 	String title,
 	Long price,
 	@Nullable
