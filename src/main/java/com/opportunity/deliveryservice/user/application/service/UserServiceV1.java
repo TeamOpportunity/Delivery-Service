@@ -88,7 +88,7 @@ public class UserServiceV1 {
 	@Transactional
 	public void logout(String accessToken, String refreshToken) {
 
-		// Access Toㅇken 유효성 검사 (만료 여부, 서명 등)
+		// Access Token 유효성 검사 (만료 여부, 서명 등)
 		// Refresh Token 유효성 검사 (만료 여부, 서명 등)
 		try {
 			jwtUtil.validateToken(accessToken); // 여기서 블랙리스트 및 만료 검사
@@ -166,6 +166,12 @@ public class UserServiceV1 {
 	 * 유저 조회
 	 */
 	public User findUserById(Long userId) {
+
+		// Soft Delete 안된 정보만 조회
+		Session session = entityManager.unwrap(Session.class);
+		Filter addressFilter = session.enableFilter("deletedAddressFilter");
+		addressFilter.setParameter("isDeleted", false);
+
 		return userRepository.findById(userId).orElseThrow(() ->
 			new OpptyException(ClientErrorCode.USER_NOT_FOUND)
 		);
@@ -226,30 +232,25 @@ public class UserServiceV1 {
 	public Page<User> searchUsersByAdmin(AdminSearchUserRequestDto requestDto) {
 
 		Session session = entityManager.unwrap(Session.class);
-
+		// User 필터 활성화 - 삭제된 User도 포함하여 조회
 		Filter userFilter = session.enableFilter("deletedUserFilter");
 		userFilter.setParameter("isDeleted", true);
-
+		// Address 필터 활성화 - 삭제된 Address도 포함하여 조회
 		Filter addressFilter = session.enableFilter("deletedAddressFilter");
 		addressFilter.setParameter("isDeleted", true);
-		// 1. 필터 활성화 및 파라미터 설정
-		// session.enableFilter("softDeleteFilter")
-		// 	.setParameter("isDeleted", true); // isDeleted=true 시 deleted_at IS NULL 조건 무시
-
 		Pageable pageable = requestDto.toPageable();
 		String keyword = requestDto.getKeyword();
 		UserRoleEnum role = requestDto.getRole();
-
 		try {
 			// 키워드에 와일드카드 문자열 "%"를 추가하여 JPQL LIKE 연산에 전달
 			if (keyword != null) {
 				keyword = "%" + keyword + "%";
 			}
-
 			// 모든 데이터를 조회하는 Custom Repository 메서드 사용
-			return userRepository.findUsersByAdminCriteria(role, keyword, pageable);
+			Page<User> userPage = userRepository.findUsersByAdminCriteria(role, keyword, pageable);
+			return userPage;
 		} finally {
-			// 3. 필터 비활성화
+			// 필터 비활성화
 			session.disableFilter("deletedUserFilter");
 			session.disableFilter("deletedAddressFilter");
 		}
