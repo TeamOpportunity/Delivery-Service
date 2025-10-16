@@ -88,7 +88,7 @@ public class UserServiceV1 {
 	@Transactional
 	public void logout(String accessToken, String refreshToken) {
 
-		// Access Toㅇken 유효성 검사 (만료 여부, 서명 등)
+		// Access Token 유효성 검사 (만료 여부, 서명 등)
 		// Refresh Token 유효성 검사 (만료 여부, 서명 등)
 		try {
 			jwtUtil.validateToken(accessToken); // 여기서 블랙리스트 및 만료 검사
