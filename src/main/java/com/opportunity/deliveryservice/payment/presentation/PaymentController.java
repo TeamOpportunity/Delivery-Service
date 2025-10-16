@@ -38,7 +38,7 @@ public class PaymentController {
 	}
 
 	@PostMapping("/confirm")
-	public ApiResponse<?> confirmPayment(
+	public ApiResponse<?> getPaymentInfo(
 		@RequestBody ConfirmPaymentRequest request,
 		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
@@ -56,7 +56,7 @@ public class PaymentController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ApiResponse<PaymentResponse> confirmPayment(
+	public ApiResponse<PaymentResponse> getPaymentInfo(
 		@PathVariable UUID orderId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
