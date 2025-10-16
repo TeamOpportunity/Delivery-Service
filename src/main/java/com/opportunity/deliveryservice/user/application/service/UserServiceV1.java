@@ -189,9 +189,6 @@ public class UserServiceV1 {
 			throw new OpptyException(ClientErrorCode.FORBIDDEN);
 		}
 
-		if (currentUser.getRole().equals(UserRoleEnum.MASTER) || currentUser.getRole().equals(UserRoleEnum.MANAGER)) {
-
-		}
 		String encodedNewPassword = null;
 		if (requestDto.getNewPassword() != null) {
 			// 기존 비밀번호 확인
