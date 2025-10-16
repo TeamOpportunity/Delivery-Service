@@ -1,6 +1,7 @@
 package com.opportunity.deliveryservice.payment.domain.entity;
 
-public enum TossPaymentStatus {
+public enum PaymentStatus {
+	PAYMENT_PENDING, // 결제 승인 전
     ABORTED, // 결제 실패
 	CANCELED, // 결제 취소
 	DONE, // 결제 승인
@@ -10,7 +11,7 @@ public enum TossPaymentStatus {
 	READY, // 결제 초기 단계, 인증 전
 	WAITING_FOR_DEPOSIT; // 발급된 가상계좌에 구매자가 아직 입금하지 않은 상태 (가상계좌로 결제시)
 
-	public static TossPaymentStatus from(String status) {
-		return TossPaymentStatus.valueOf(status.trim().toUpperCase());
+	public static PaymentStatus from(String status) {
+		return PaymentStatus.valueOf(status.trim().toUpperCase());
 	}
 }

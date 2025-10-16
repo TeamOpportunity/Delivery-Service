@@ -13,6 +13,8 @@ import com.opportunity.deliveryservice.order.domain.entity.OrderProduct;
 import com.opportunity.deliveryservice.order.domain.repository.OrderProductRepository;
 import com.opportunity.deliveryservice.order.domain.repository.OrderRepository;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CreateOrderRequest;
+import com.opportunity.deliveryservice.payment.domain.entity.Payment;
+import com.opportunity.deliveryservice.payment.domain.repository.PaymentRepository;
 import com.opportunity.deliveryservice.product.domain.entity.Product;
 import com.opportunity.deliveryservice.product.domain.repository.ProductRepository;
 
@@ -24,6 +26,7 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final ProductRepository productRepository;
 	private final OrderProductRepository orderProductRepository;
+	private final PaymentRepository paymentRepository;
 
 	@Transactional
 	public void createOrder(CreateOrderRequest req) {
@@ -44,8 +47,11 @@ public class OrderService {
 			})
 			.toList();
 
+		Payment payment = Payment.builder()  .build();
+
 		orderRepository.save(newOrder);
 		orderProductRepository.saveAll(orderProducts);
+		paymentRepository.save(payment);
 	}
 
 	private Product getProduct(UUID productId){
