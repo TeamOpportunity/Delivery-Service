@@ -43,6 +43,13 @@ public class ApiResponse<T> {
 	}
 
 	/**
+	 * 성공 응답 (데이터 없이 메시지만)
+	 */
+	public static <T> ApiResponse<T> successNoData(String code, String message) {
+		return new ApiResponse<>(code, message, null);
+	}
+
+	/**
 	 * 본문 없이 성공 응답 (No Content)을 생성합니다.
 	 */
 	public static <T> ApiResponse<T> noContent() {
@@ -62,7 +69,6 @@ public class ApiResponse<T> {
 	public static <T> ApiResponse<T> fail(String code, String message, T data) {
 		return new ApiResponse<>(code, message, data);
 	}
-
 
 }
 
