@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.opportunity'
 version = '0.0.1-SNAPSHOT'
-description = 'delivery-service'
+description = 'deliveryservice'
 
 java {
     toolchain {
@@ -43,6 +43,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // JWT
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
@@ -51,12 +52,16 @@ dependencies {
 
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'com.google.genai:google-genai:1.0.0'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+
 }
 
 tasks.named('test') {
