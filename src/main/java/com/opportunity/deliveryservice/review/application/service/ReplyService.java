@@ -30,10 +30,7 @@ public class ReplyService {
 
 		validate();
 
-		Reply newReply = Reply.builder()
-			.content(request.content())
-			.review(review)
-			.build();
+		Reply newReply = Reply.builder().content(request.content()).review(review).build();
 
 		review.setReply(newReply);
 
@@ -46,14 +43,14 @@ public class ReplyService {
 		Review review = getReviewId(reviewId);
 		Reply updateReply = review.getReply();
 
-		if(updateReply == null){
+		if (updateReply == null) {
 			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		updateReply.updateReply(request.content());
 	}
 
 	@Transactional
-	public void deleteReply(UUID reviewId, Long userId){
+	public void deleteReply(UUID reviewId, Long userId) {
 		validate();
 
 		Reply deletedReply = getReviewId(reviewId).getReply();
@@ -63,6 +60,7 @@ public class ReplyService {
 		deletedReply.softDelete(userId);
 	}
 
+	// 답글 단독 조회도 필요할까?
 	@Transactional(readOnly = true)
 	public Reply getReply(UUID reviewId) {
 		validate();
@@ -71,21 +69,19 @@ public class ReplyService {
 			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		return reply;
-	}// 답글 단독 조회도 필요할까?
+	}
 
-	private void validate(){
+	private void validate() {
 		// 사용자 검증 코드 구현 (추후)
 	}
 
-	private Review getReviewId(UUID reviewId){
-		return reviewRepository.findById(reviewId).orElseThrow(
-			() -> new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND)
-		);
+	private Review getReviewId(UUID reviewId) {
+		return reviewRepository.findById(reviewId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND));
 	}
 
-	private Reply getReplyId(UUID replyId){
-		return replyRepository.findById(replyId).orElseThrow(
-			() -> new OpptyException((ClientErrorCode.REPLY_NOT_FOUND))
-		);
+	private Reply getReplyId(UUID replyId) {
+		return replyRepository.findById(replyId)
+			.orElseThrow(() -> new OpptyException((ClientErrorCode.REPLY_NOT_FOUND)));
 	}
 }

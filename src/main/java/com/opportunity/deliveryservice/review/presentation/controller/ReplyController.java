@@ -32,8 +32,8 @@ public class ReplyController {
 		@RequestBody CreateReplyRequest request,
 		@PathVariable UUID reviewId
 		//@AuthenticationPrincipal
-	){
-		replyService.createReply(request,reviewId);
+	) {
+		replyService.createReply(request, reviewId);
 		return ApiResponse.noContent();
 	}
 
@@ -42,8 +42,8 @@ public class ReplyController {
 		@PathVariable UUID reviewId,
 		@RequestBody UpdateReplyRequest request
 		//@AuthenticationPrincipal
-	){
-		replyService.updateReply(reviewId ,request);
+	) {
+		replyService.updateReply(reviewId, request);
 		return ApiResponse.noContent();
 	}
 
@@ -53,7 +53,7 @@ public class ReplyController {
 		@RequestParam Long userId
 		//  @AuthenticationPrincipal UserPrincipal principal
 		// Long userId = principal.getId();
-	){
+	) {
 		replyService.deleteReply(reviewId, userId);
 		return ApiResponse.noContent();
 	}
@@ -61,7 +61,7 @@ public class ReplyController {
 	@GetMapping
 	public ApiResponse<GetReplyResponse> getReply(
 		@PathVariable UUID reviewId
-	){
+	) {
 		GetReplyResponse replyResponse = GetReplyResponse.of(replyService.getReply(reviewId));
 		return ApiResponse.success(replyResponse);
 	}

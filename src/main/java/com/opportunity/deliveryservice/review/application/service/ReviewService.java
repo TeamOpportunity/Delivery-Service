@@ -27,7 +27,7 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 
 	@Transactional
-	public void createReview(CreateReviewRequest request, Long storeId, User user){
+	public void createReview(CreateReviewRequest request, Long storeId, User user) {
 
 		//주문 했는지
 		//주문을 하고 첫 리뷰인지.
@@ -44,20 +44,20 @@ public class ReviewService {
 	}
 
 	@Transactional
-	public void updateReview(UpdateReviewRequest request, UUID reviewId, User currentUser){
+	public void updateReview(UpdateReviewRequest request, UUID reviewId, User currentUser) {
 		Review updateReview = getReviewId(reviewId);
 		//본인이 맞는지 or 관리자인지
 		validateAuthorOrAdmin(updateReview, currentUser);
 
 		//리뷰 업데이트
 		updateReview.updateReview(request.content(), request.image());
-		if(request.rating() != null){
+		if (request.rating() != null) {
 			updateReview.setRating(request.rating());
 		}
 	}
 
 	@Transactional
-	public void deleteReview(UUID reviewId, User currentUser){
+	public void deleteReview(UUID reviewId, User currentUser) {
 
 		Review deleteReview = getReviewId(reviewId);
 		//본인이 맞는지 or 관리자인지
@@ -69,15 +69,15 @@ public class ReviewService {
 
 	//가게 리뷰 조회
 	@Transactional(readOnly = true)
-	public List<Review> getStoreReviews(Long storeId, Pageable pageable){
+	public List<Review> getStoreReviews(Long storeId, Pageable pageable) {
 		Page<Review> reviewPage = reviewRepository.findByStoreIdAndDeletedAtIsNull(storeId, pageable);
 		return findReviews(reviewPage);
 	}
 
 	//내 리뷰 조회
 	@Transactional(readOnly = true)
-	public List<Review> getMyReviews(User currentUser, Pageable pageable){
-		if(currentUser == null){
+	public List<Review> getMyReviews(User currentUser, Pageable pageable) {
+		if (currentUser == null) {
 			throw new OpptyException(ClientErrorCode.UNAUTHORIZED);
 		}
 		Page<Review> getMyReviews = reviewRepository.findByUserIdAndDeletedAtIsNull(currentUser.getId(), pageable);
@@ -86,7 +86,7 @@ public class ReviewService {
 
 	//관리자용 유저 리뷰 조회
 	@Transactional(readOnly = true)
-	public List<Review> getUserReviewsForAdmin(Long targetUserId, Pageable pageable){
+	public List<Review> getUserReviewsForAdmin(Long targetUserId, Pageable pageable) {
 		validateAdmin();
 
 		Page<Review> userReviewPage = reviewRepository.findByUserIdAndDeletedAtIsNull(targetUserId, pageable);
@@ -99,7 +99,7 @@ public class ReviewService {
 	public Review getReviewDetail(UUID reviewId) {
 		Review getReviewDetail = getReviewId(reviewId);
 
-		if(getReviewDetail.getDeletedAt() != null){
+		if (getReviewDetail.getDeletedAt() != null) {
 			throw new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND);
 		}
 
@@ -114,6 +114,7 @@ public class ReviewService {
 			throw new OpptyException(ClientErrorCode.FORBIDDEN);
 		}
 	}
+
 	//관리자 or 리뷰 작성자인지
 	private void validateAuthorOrAdmin(Review review, User currentUser) {
 		String role = currentUser.getRole().toString();
@@ -130,10 +131,10 @@ public class ReviewService {
 		if (authentication == null || !authentication.isAuthenticated()) {
 			throw new OpptyException(ClientErrorCode.UNAUTHORIZED);
 		}
-		return ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+		return ((UserDetailsImpl)authentication.getPrincipal()).getUser();
 	}
 
-	private Review getReviewId(UUID reviewId){
+	private Review getReviewId(UUID reviewId) {
 		return reviewRepository.findById(reviewId).orElseThrow(
 			() -> new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND)
 		);

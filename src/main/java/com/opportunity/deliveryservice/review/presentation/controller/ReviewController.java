@@ -43,7 +43,7 @@ public class ReviewController {
 		@PathVariable Long storeId,
 		@Valid @RequestBody CreateReviewRequest request,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		User user = principal.getUser();
 		reviewService.createReview(request, storeId, user);
 		return ApiResponse.noContent();
@@ -55,7 +55,7 @@ public class ReviewController {
 		@PathVariable UUID reviewId,
 		@RequestBody UpdateReviewRequest request,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		reviewService.updateReview(request, reviewId, principal.getUser());
 		return ApiResponse.noContent();
 	}
@@ -66,7 +66,7 @@ public class ReviewController {
 		@PathVariable UUID reviewId,
 		@AuthenticationPrincipal UserDetailsImpl principal
 		// Long userId = principal.getId();
-	){
+	) {
 		reviewService.deleteReview(reviewId, principal.getUser());
 		return ApiResponse.noContent();
 	}
@@ -79,7 +79,7 @@ public class ReviewController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt,desc") String sort
-	){
+	) {
 		size = sanitizePageSize(size);
 		PageRequest pageRequest = buildPageRequest(page, size, sort);
 
@@ -95,10 +95,11 @@ public class ReviewController {
 	@GetMapping("/reviews/{reviewId}")
 	public ApiResponse<GetReviewResponse> getReviewDetail(
 		@PathVariable UUID reviewId
-	){
+	) {
 		Review getReviewDetail = reviewService.getReviewDetail(reviewId);
 		return ApiResponse.success(GetReviewResponse.of(getReviewDetail));
 	}
+
 	//유저용 내 리뷰 페이지
 	@GetMapping("/users/me/reviews")
 	public ApiResponse<List<GetReviewResponse>> getMyReviews(
@@ -106,7 +107,7 @@ public class ReviewController {
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt,desc") String sort,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		size = sanitizePageSize(size);
 		PageRequest pageRequest = buildPageRequest(page, size, sort);
 
@@ -126,7 +127,7 @@ public class ReviewController {
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt,desc") String sort,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		size = sanitizePageSize(size);
 		PageRequest pageRequest = buildPageRequest(page, size, sort);
 
@@ -146,9 +147,10 @@ public class ReviewController {
 	}
 
 	//페이지 사이즈 제한
-	private int sanitizePageSize(int size){
-		for (int allowed : ALLOWED_PAGE_SIZES){
-			if (size == allowed) return size;
+	private int sanitizePageSize(int size) {
+		for (int allowed : ALLOWED_PAGE_SIZES) {
+			if (size == allowed)
+				return size;
 		}
 		return 10; // 기본값
 	}

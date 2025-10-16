@@ -13,6 +13,7 @@ public record GetReviewResponse(
 		GetReplyResponse replyResponse = review.getReply() != null
 			? GetReplyResponse.of(review.getReply())
 			: null;
-		return new GetReviewResponse(review.getStoreId(), review.getContent(), review.getRating(), review.getImage(), replyResponse);
+		return new GetReviewResponse(review.getStoreId(), review.getContent(), review.getRating(), review.getImage(),
+			replyResponse);
 	}
 }

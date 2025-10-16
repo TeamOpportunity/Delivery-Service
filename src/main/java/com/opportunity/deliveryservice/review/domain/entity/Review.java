@@ -29,7 +29,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "p_review")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review extends BaseEntity{
+public class Review extends BaseEntity {
 
 	@Id
 	@UuidGenerator
@@ -61,7 +61,7 @@ public class Review extends BaseEntity{
 	//Order One To One
 
 	@Builder
-	public Review(String content, int rating, String image,Long storeId, User user) {
+	public Review(String content, int rating, String image, Long storeId, User user) {
 		this.content = content;
 		this.rating = rating;
 		this.image = image;

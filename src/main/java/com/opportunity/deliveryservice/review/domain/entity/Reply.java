@@ -23,7 +23,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "p_reply")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reply extends BaseEntity{
+public class Reply extends BaseEntity {
 
 	@Id
 	@UuidGenerator
@@ -34,7 +34,6 @@ public class Reply extends BaseEntity{
 
 	@Column(nullable = false)
 	private boolean isVisible = true; // 기본값 true
-
 
 	@Setter
 	@OneToOne
