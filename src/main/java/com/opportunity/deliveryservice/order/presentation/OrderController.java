@@ -34,7 +34,7 @@ public class OrderController {
 		return ApiResponse.noContent();
 	}
 
-	@PostMapping("/{orderId}")
+	@PostMapping("/{orderId}/cancel")
 	public ApiResponse<?> cancelOrder(
 		@PathVariable UUID orderId,
 		@RequestBody CancelOrderRequest request,
