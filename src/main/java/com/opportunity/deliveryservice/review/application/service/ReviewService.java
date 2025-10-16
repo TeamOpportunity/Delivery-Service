@@ -65,7 +65,6 @@ public class ReviewService {
 
 		//softDelete 처리
 		deleteReview.softDelete(currentUser.getId());
-
 	}
 
 	//가게 리뷰 조회
