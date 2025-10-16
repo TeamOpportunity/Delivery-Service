@@ -17,11 +17,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	boolean existsByEmail(String email);
 
-	Optional<User> findByUsername(String username);
+	Optional<User> findByUsernameAndDeletedAtIsNull(String username);
 
 
 	// 관리자 전용 조회(Soft Delete 포함) - JPQL로 명시적 구현
-	// keyword로 username 또는 email 검색
 	@Query(value = """
 		SELECT DISTINCT u 
 		FROM User u 
