@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TossConfirmResponse {
+public class TossPaymentResponse {
 
     private String mId;
     private String lastTransactionKey;
@@ -34,7 +35,7 @@ public class TossConfirmResponse {
     private Object cashReceipt;          // 현금영수증 단건 (과거)
     private Object cashReceipts;         // 현금영수증 복수 (신규)
     private Object discount;             // 할인정보
-    private Object cancels;              // 취소내역
+    private List<Cancel> cancels;              // 취소내역
     private String secret;
 
     private String type;
@@ -97,5 +98,22 @@ public class TossConfirmResponse {
     public static class Failure {
         private String code;
         private String message;
+    }
+
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+    public static class Cancel {
+        private String transactionKey;
+        private String cancelReason;
+        private Integer taxExemptionAmount;
+        private OffsetDateTime canceledAt;
+        private Integer cardDiscountAmount;
+        private Integer transferDiscountAmount;
+        private Integer easyPayDiscountAmount;
+        private String receiptKey;
+        private String cancelStatus;
+        private String cancelRequestId;
+        private Integer cancelAmount;
+        private Integer taxFreeAmount;
+        private Integer refundableAmount;
     }
 }

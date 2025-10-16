@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
 import com.opportunity.deliveryservice.payment.application.service.PaymentService;
+import com.opportunity.deliveryservice.payment.presentation.dto.request.CancelPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.request.ConfirmPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.request.IntentPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.response.PaymentResponse;
@@ -40,6 +41,15 @@ public class PaymentController {
 		// @AuthenticationPrincipal
 	) {
 		paymentService.confirmPayment(request);
+		return ApiResponse.noContent();
+	}
+
+	@PostMapping("/cancel")
+	public ApiResponse<?> cancelPayment(
+		@RequestBody CancelPaymentRequest request
+		// @AuthenticationPrincipal
+	) {
+		paymentService.cancelPayment(request);
 		return ApiResponse.noContent();
 	}
 

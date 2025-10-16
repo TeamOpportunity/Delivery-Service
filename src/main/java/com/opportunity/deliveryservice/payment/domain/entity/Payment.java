@@ -38,17 +38,22 @@ public class Payment extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	TossPaymentMethod method;
 
-	String tossPaymentId;
+	String tossPaymentKey;
 
 	String tossOrderId;
 
 	OffsetDateTime approvedAt;
+	OffsetDateTime cancelAt;
+	String cancelReason;
 
 	@OneToOne
 	Order order;
 
-	String errorCode;
-	String errorMessage;
+	String confirmErrorCode;
+	String confirmErrorMessage;
+
+	String cancelErrorCode;
+	String cancelErrorMessage;
 
 	@Builder
 	public Payment(Integer amount, Order order) {
@@ -57,8 +62,8 @@ public class Payment extends BaseEntity {
 		this.status = PaymentStatus.PAYMENT_PENDING;
 	}
 
-	public void setPaymentInfo(String tossPaymentId, String tossOrderId){
-		this.tossPaymentId = tossPaymentId;
+	public void setPaymentInfo(String tossPaymentKey, String tossOrderId){
+		this.tossPaymentKey = tossPaymentKey;
 		this.tossOrderId = tossOrderId;
 	}
 
@@ -69,7 +74,29 @@ public class Payment extends BaseEntity {
 	}
 
 	public void setPaymentError(String errorCode, String errorMessage){
-		this.errorCode = errorCode;
-		this.errorMessage = errorMessage;
+		this.confirmErrorCode = errorCode;
+		this.confirmErrorMessage = errorMessage;
+	}
+
+
+	public void setPaymentCancelError(String errorCode, String errorMessage){
+		this.cancelErrorCode = errorCode;
+		this.cancelErrorMessage = errorMessage;
+	}
+
+	public void setPaymentCancelInfo(String status, OffsetDateTime canceledAt, String cancelReason) {
+		this.status = PaymentStatus.from(status);
+		this.cancelReason = cancelReason;
+		this.cancelAt = canceledAt;
+	}
+
+	public void setPaymentErrorNull() {
+		this.confirmErrorCode = null;
+		this.confirmErrorMessage = null;
+	}
+
+	public void setPaymentCancelErrorNull() {
+		this.cancelErrorCode = null;
+		this.cancelErrorMessage = null;
 	}
 }
