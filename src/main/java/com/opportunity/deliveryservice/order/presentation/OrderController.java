@@ -1,11 +1,13 @@
 package com.opportunity.deliveryservice.order.presentation;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
+import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
 import com.opportunity.deliveryservice.order.application.service.OrderService;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CreateOrderRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
@@ -21,10 +23,10 @@ public class OrderController {
 
 	@PostMapping
 	public ApiResponse<?> createOrder(
-		@RequestBody CreateOrderRequest request
-		// @AuthenticationPrincipal
+		@RequestBody CreateOrderRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		orderService.createOrder(request);
+		orderService.createOrder(request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 }

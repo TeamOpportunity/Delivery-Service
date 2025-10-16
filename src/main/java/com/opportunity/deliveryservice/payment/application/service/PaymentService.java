@@ -20,6 +20,7 @@ import com.opportunity.deliveryservice.payment.presentation.dto.request.CancelPa
 import com.opportunity.deliveryservice.payment.presentation.dto.request.ConfirmPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.request.IntentPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.response.PaymentResponse;
+import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,9 +39,12 @@ public class PaymentService {
 	 * @param orderId
 	 */
 	@Transactional
-	public void intentPayment(UUID orderId, IntentPaymentRequest request) {
+	public void intentPayment(UUID orderId, IntentPaymentRequest request, User user) {
+		Order order = getOrder(orderId);
+		validate(user, order);
+
 		Payment newPayment = Payment.builder()
-			.order(getOrder(orderId))
+			.order(order)
 			.amount(request.amount())
 			.build();
 
@@ -52,8 +56,10 @@ public class PaymentService {
 	 * @param request
 	 */
 	@Transactional(noRollbackFor = OpptyException.class)
-	public void confirmPayment(ConfirmPaymentRequest request) {
+	public void confirmPayment(ConfirmPaymentRequest request, User user) {
 		Order order = getOrder(request.orderId());
+		validate(user, order);
+
 		Payment payment = paymentRepository.findByOrder(order);
 
 		persistPaymentInfo(payment, request);
@@ -66,7 +72,9 @@ public class PaymentService {
 	 * @param request
 	 */
 	@Transactional(noRollbackFor = OpptyException.class)
-	public void cancelPayment(CancelPaymentRequest request) {
+	public void cancelPayment(CancelPaymentRequest request, User user) {
+		verifyPaymentAuthorization(user, request.paymentKey());
+
 		processCancelInNewTx(request);
 	}
 
@@ -76,26 +84,14 @@ public class PaymentService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public PaymentResponse getPayment(UUID orderId) {
-		Payment payment = paymentRepository.findByOrder(getOrder(orderId));
+	public PaymentResponse getPayment(UUID orderId, User user) {
+		Order order = getOrder(orderId);
+		validate(user, order);
+
+		Payment payment = paymentRepository.findByOrder(order);
 
 		TossPaymentResponse response = tossPaymentService.getPaymentInfo(payment.getTossPaymentKey());
 		return PaymentResponse.of(response, payment.getId());
-	}
-
-
-
-	private void persistPaymentInfo(Payment payment, ConfirmPaymentRequest request) {
-		payment.setPaymentInfo(request.tossPaymentKey(), request.tossOrderId());
-		paymentRepository.saveAndFlush(payment);
-	}
-
-	private TossConfirmRequest buildTossConfirmRequest(ConfirmPaymentRequest request) {
-		return TossConfirmRequest.builder()
-			.orderId(request.tossOrderId())
-			.paymentKey(request.tossPaymentKey())
-			.amount(request.amount())
-			.build();
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = OpptyException.class)
@@ -137,6 +133,35 @@ public class PaymentService {
 			payment.setPaymentCancelError(e.getErrorCode().getCode(), e.getErrorCode().getMessage());
 			throw e;
 		}
+	}
+
+	private void validate(User user, Order order){
+		if(!user.equals(order.getUser())){
+			throw new OpptyException(ClientErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void verifyPaymentAuthorization(User user, String paymentKey){
+		Payment payment = paymentRepository.findByTossPaymentKey(paymentKey).orElseThrow(
+			() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND)
+		);
+
+		if(!user.getId().toString().equals(payment.getCreatedBy())){
+			throw new OpptyException(ClientErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void persistPaymentInfo(Payment payment, ConfirmPaymentRequest request) {
+		payment.setPaymentInfo(request.tossPaymentKey(), request.tossOrderId());
+		paymentRepository.saveAndFlush(payment);
+	}
+
+	private TossConfirmRequest buildTossConfirmRequest(ConfirmPaymentRequest request) {
+		return TossConfirmRequest.builder()
+			.orderId(request.tossOrderId())
+			.paymentKey(request.tossPaymentKey())
+			.amount(request.amount())
+			.build();
 	}
 
 

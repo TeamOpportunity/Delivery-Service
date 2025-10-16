@@ -2,6 +2,7 @@ package com.opportunity.deliveryservice.payment.presentation;
 
 import java.util.UUID;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
+import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
 import com.opportunity.deliveryservice.payment.application.service.PaymentService;
 import com.opportunity.deliveryservice.payment.presentation.dto.request.CancelPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.request.ConfirmPaymentRequest;
@@ -28,37 +30,37 @@ public class PaymentController {
 	@PostMapping("/intents/{orderId}")
 	public ApiResponse<?> intentPayment(
 		@PathVariable UUID orderId,
-		@RequestBody IntentPaymentRequest request
-		// @AuthenticationPrincipal
+		@RequestBody IntentPaymentRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		paymentService.intentPayment(orderId, request);
+		paymentService.intentPayment(orderId, request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
 	@PostMapping("/confirm")
 	public ApiResponse<?> confirmPayment(
-		@RequestBody ConfirmPaymentRequest request
-		// @AuthenticationPrincipal
+		@RequestBody ConfirmPaymentRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		paymentService.confirmPayment(request);
+		paymentService.confirmPayment(request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
 	@PostMapping("/cancel")
 	public ApiResponse<?> cancelPayment(
-		@RequestBody CancelPaymentRequest request
-		// @AuthenticationPrincipal
+		@RequestBody CancelPaymentRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		paymentService.cancelPayment(request);
+		paymentService.cancelPayment(request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
 	@GetMapping("/{orderId}")
 	public ApiResponse<PaymentResponse> confirmPayment(
-		@PathVariable UUID orderId
-		// @AuthenticationPrincipal
+		@PathVariable UUID orderId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		return ApiResponse.success(paymentService.getPayment(orderId));
+		return ApiResponse.success(paymentService.getPayment(orderId, userDetails.getUser()));
 	}
 }
 

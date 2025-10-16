@@ -17,6 +17,8 @@ import com.opportunity.deliveryservice.payment.domain.entity.Payment;
 import com.opportunity.deliveryservice.payment.domain.repository.PaymentRepository;
 import com.opportunity.deliveryservice.product.domain.entity.Product;
 import com.opportunity.deliveryservice.product.domain.repository.ProductRepository;
+import com.opportunity.deliveryservice.user.domain.entity.User;
+import com.opportunity.deliveryservice.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,9 +30,10 @@ public class OrderService {
 	private final OrderProductRepository orderProductRepository;
 
 	@Transactional
-	public void createOrder(CreateOrderRequest req) {
+	public void createOrder(CreateOrderRequest req, User user) {
 		Order newOrder = Order.builder()
 			.amount(req.amount())
+			.user(user)
 			.request(req.request())
 			.build();
 
