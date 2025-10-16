@@ -52,7 +52,8 @@ public class CartControllerV1 {
 		@PathVariable UUID productId,
 		@RequestBody ReqCartUpdateQuantityDto request
 	) {
-		ResCartProductsDto updatedProduct = cartServiceV1.updateProductQuantity(user.getUser().getId(), productId, request);
+		ResCartProductsDto updatedProduct = cartServiceV1
+			.updateProductQuantity(user.getUser().getId(), productId, request);
 		return ApiResponse.success(updatedProduct);
 	}
 
