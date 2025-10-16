@@ -34,7 +34,8 @@ public class OrderProduct {
 	Long productQuantity;
 
 	@Builder
-	public OrderProduct(Long productPrice, String productTitle, UUID productId, Long productQuantity){
+	public OrderProduct(Order order, Long productPrice, String productTitle, UUID productId, Long productQuantity){
+		this.order = order;
 		this.productPrice = productPrice;
 		this.productTitle = productTitle;
 		this.productId = productId;

@@ -34,10 +34,13 @@ public class OrderService {
 			.request(req.request())
 			.build();
 
+		orderRepository.save(newOrder);
+
 		List<OrderProduct> orderProducts = req.productList().stream()
 			.map(info -> {
 				Product foundProduct = getProduct(info.productId());
 				return OrderProduct.builder()
+					.order(newOrder)
 					.productId(foundProduct.getId())
 					.productPrice(foundProduct.getPrice())
 					.productQuantity(info.quantity())
@@ -46,7 +49,6 @@ public class OrderService {
 			})
 			.toList();
 
-		orderRepository.save(newOrder);
 		orderProductRepository.saveAll(orderProducts);
 	}
 
