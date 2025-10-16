@@ -20,7 +20,7 @@ public class TossFeignConfig {
         // BASIC : 요청 메서드, URL, 응답 상태 코드, 실행시간
         // HEADERS : BASIC + 요청/응답 헤더
         // NONE : 로깅 없음
-        return Logger.Level.FULL;
+        return Logger.Level.BASIC;
     }
 
     @Bean
