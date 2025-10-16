@@ -5,21 +5,25 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
-import com.opportunity.deliveryservice.review.domain.exception.ReviewErrorCode;
+import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -48,16 +52,21 @@ public class Review extends BaseEntity{
 
 	@Column(nullable = false) //임시 스토어 아이디
 	private Long storeId;
+	//Store One To Many
 
-	//User Many To One
+	@Setter
+	@JoinColumn(nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	private User user;
 	//Order One To One
 
 	@Builder
-	public Review(String content, int rating, String image,Long storeId) {
+	public Review(String content, int rating, String image,Long storeId, User user) {
 		this.content = content;
 		this.rating = rating;
 		this.image = image;
 		this.storeId = storeId;
+		this.user = user;
 		//userId
 	}
 
@@ -68,7 +77,7 @@ public class Review extends BaseEntity{
 
 	public void setRating(int rating) {
 		if (rating < 1 || rating > 5) {
-			throw new OpptyException(ReviewErrorCode.INVALID_RATING);
+			throw new OpptyException(ClientErrorCode.INVALID_RATING);
 		}
 		this.rating = rating;
 	}

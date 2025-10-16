@@ -5,10 +5,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
 import com.opportunity.deliveryservice.review.domain.entity.Reply;
 import com.opportunity.deliveryservice.review.domain.entity.Review;
-import com.opportunity.deliveryservice.review.domain.exception.ReviewErrorCode;
 import com.opportunity.deliveryservice.review.domain.repository.ReplyRepository;
 import com.opportunity.deliveryservice.review.domain.repository.ReviewRepository;
 import com.opportunity.deliveryservice.review.presentation.dto.request.CreateReplyRequest;
@@ -47,7 +47,7 @@ public class ReplyService {
 		Reply updateReply = review.getReply();
 
 		if(updateReply == null){
-			throw new OpptyException(ReviewErrorCode.REPLY_NOT_FOUND);
+			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		updateReply.updateReply(request.content());
 	}
@@ -58,7 +58,7 @@ public class ReplyService {
 
 		Reply deletedReply = getReviewId(reviewId).getReply();
 		if (deletedReply == null) {
-			throw new OpptyException(ReviewErrorCode.REPLY_NOT_FOUND);
+			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		deletedReply.softDelete(userId);
 	}
@@ -67,7 +67,7 @@ public class ReplyService {
 		validate();
 		Reply reply = getReviewId(reviewId).getReply();
 		if (reply == null) {
-			throw new OpptyException(ReviewErrorCode.REPLY_NOT_FOUND);
+			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		return reply;
 	}// 답글 단독 조회도 필요할까?
@@ -78,13 +78,13 @@ public class ReplyService {
 
 	private Review getReviewId(UUID reviewId){
 		return reviewRepository.findById(reviewId).orElseThrow(
-			() -> new OpptyException(ReviewErrorCode.REVIEW_NOT_FOUND)
+			() -> new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND)
 		);
 	}
 
 	private Reply getReplyId(UUID replyId){
 		return replyRepository.findById(replyId).orElseThrow(
-			() -> new OpptyException((ReviewErrorCode.REPLY_NOT_FOUND))
+			() -> new OpptyException((ClientErrorCode.REPLY_NOT_FOUND))
 		);
 	}
 }
