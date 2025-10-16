@@ -22,6 +22,7 @@ import com.opportunity.deliveryservice.payment.domain.repository.PaymentReposito
 import com.opportunity.deliveryservice.product.domain.entity.Product;
 import com.opportunity.deliveryservice.product.domain.repository.ProductRepository;
 import com.opportunity.deliveryservice.user.domain.entity.User;
+import com.opportunity.deliveryservice.user.domain.entity.UserRoleEnum;
 import com.opportunity.deliveryservice.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -82,9 +83,13 @@ public class OrderService {
 	}
 
 	private void validate(Order order, User user){
-		if(!order.getUser().equals(user)){
+		if(user.getRole().equals(UserRoleEnum.CUSTOMER) && !order.getUser().equals(user)){
 			throw new OpptyException(ClientErrorCode.FORBIDDEN);
 		}
+
+		// if(user.getRole().equals(UserRoleEnum.OWNER) && !order.getStore().equals(user)){
+		// 	throw new OpptyException(ClientErrorCode.FORBIDDEN);
+		// }
 
 		if(order.getProgress().equals(OrderProgress.ORDER_CONFIRMED)){
 			throw new OpptyException(ClientErrorCode.ORDER_ALREADY_CONFIRMED);

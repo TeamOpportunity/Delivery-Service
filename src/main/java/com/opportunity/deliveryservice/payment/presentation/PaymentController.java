@@ -1,7 +1,9 @@
 package com.opportunity.deliveryservice.payment.presentation;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,7 @@ public class PaymentController {
 
 	private final PaymentService paymentService;
 
+	@Secured("ROLE_CUSTOMER")
 	@PostMapping("/intents/{orderId}")
 	public ApiResponse<?> intentPayment(
 		@PathVariable UUID orderId,
@@ -37,6 +40,7 @@ public class PaymentController {
 		return ApiResponse.noContent();
 	}
 
+	@Secured("ROLE_CUSTOMER")
 	@PostMapping("/confirm")
 	public ApiResponse<?> getPaymentInfo(
 		@RequestBody ConfirmPaymentRequest request,
@@ -46,6 +50,7 @@ public class PaymentController {
 		return ApiResponse.noContent();
 	}
 
+	@Secured("ROLE_CUSTOMER")
 	@PostMapping("/cancel")
 	public ApiResponse<?> cancelPayment(
 		@RequestBody CancelPaymentRequest request,
@@ -55,6 +60,7 @@ public class PaymentController {
 		return ApiResponse.noContent();
 	}
 
+	@Secured("ROLE_CUSTOMER")
 	@GetMapping("/{orderId}")
 	public ApiResponse<PaymentResponse> getPaymentInfo(
 		@PathVariable UUID orderId,

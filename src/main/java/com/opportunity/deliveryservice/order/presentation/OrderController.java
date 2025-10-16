@@ -2,6 +2,7 @@ package com.opportunity.deliveryservice.order.presentation;
 
 import java.util.UUID;
 
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
+	@Secured("ROLE_CUSTOMER")
 	public ApiResponse<?> createOrder(
 		@RequestBody CreateOrderRequest request,
 		@AuthenticationPrincipal UserDetailsImpl userDetails
@@ -35,6 +37,7 @@ public class OrderController {
 	}
 
 	@PostMapping("/{orderId}/cancel")
+	@Secured({"ROLE_CUSTOMER", "ROLE_OWNER"}) // 주문자, 가게 주인 취소 가능
 	public ApiResponse<?> cancelOrder(
 		@PathVariable UUID orderId,
 		@RequestBody CancelOrderRequest request,
