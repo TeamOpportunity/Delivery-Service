@@ -26,7 +26,6 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final ProductRepository productRepository;
 	private final OrderProductRepository orderProductRepository;
-	private final PaymentRepository paymentRepository;
 
 	@Transactional
 	public void createOrder(CreateOrderRequest req) {
@@ -47,11 +46,8 @@ public class OrderService {
 			})
 			.toList();
 
-		Payment payment = Payment.builder()  .build();
-
 		orderRepository.save(newOrder);
 		orderProductRepository.saveAll(orderProducts);
-		paymentRepository.save(payment);
 	}
 
 	private Product getProduct(UUID productId){
