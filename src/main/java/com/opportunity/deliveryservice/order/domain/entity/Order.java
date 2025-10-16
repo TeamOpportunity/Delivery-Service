@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.antlr.v4.runtime.misc.NotNull;
 
+import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
 import com.opportunity.deliveryservice.payment.domain.entity.Payment;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 
@@ -27,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_order")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class Order extends BaseEntity {
 
 	@GeneratedValue
 	@Id

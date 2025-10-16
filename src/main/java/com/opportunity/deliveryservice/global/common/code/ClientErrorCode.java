@@ -36,6 +36,7 @@ public enum ClientErrorCode implements BaseErrorCode {
 	FORBIDDEN(HttpStatus.FORBIDDEN, "OPPTY-CMN-403-01", "해당 요청에 대한 접근 권한이 없습니다."),
 	UNAUTHORIZED_ROLE_CHANGE(HttpStatus.FORBIDDEN, "OPPTY-USR-403-01", "권한을 변경할 수 있는 권한이 없습니다."),
 
+
 	// 404 Not Found
 	RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-CMN-404-01", "요청한 리소스를 찾을 수 없습니다."),
 	ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-ADD-404-01", "주소록을 찾을 수 없습니다."),
@@ -46,7 +47,9 @@ public enum ClientErrorCode implements BaseErrorCode {
 	DUPLICATE_USERNAME(HttpStatus.CONFLICT, "OPPTY-USR-409-01", "이미 존재하는 아이디입니다."),
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "OPPTY-USR-409-02", "이미 존재하는 이메일입니다."),
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "OPPTY-USR-409-03", "아이디 또는 비밀번호가 일치하지 않습니다."),
-	INVALID_ADMIN_KEY(HttpStatus.FORBIDDEN, "OPPTY-USR-409-04", "유효하지 않은 관리자 인증 키입니다.");
+	INVALID_ADMIN_KEY(HttpStatus.FORBIDDEN, "OPPTY-USR-409-04", "유효하지 않은 관리자 인증 키입니다."),
+	ORDER_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "OPPTY-ORD-409-01", "이미 주문이 허락되어 준비중입니다."),
+	CANCELLATION_TIME_EXPIRED(HttpStatus.CONFLICT, "OPPTY-ORD-409-02", "주문 취소 가능한 시간이 지났습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

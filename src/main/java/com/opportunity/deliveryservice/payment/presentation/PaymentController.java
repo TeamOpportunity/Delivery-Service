@@ -51,7 +51,7 @@ public class PaymentController {
 		@RequestBody CancelPaymentRequest request,
 		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		paymentService.cancelPayment(request, userDetails.getUser());
+		paymentService.cancelPayment(request.paymentKey(), request.cancelReason(), userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 

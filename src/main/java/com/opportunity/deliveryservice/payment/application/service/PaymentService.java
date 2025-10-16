@@ -10,6 +10,7 @@ import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.code.ServerErrorCode;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
 import com.opportunity.deliveryservice.order.domain.entity.Order;
+import com.opportunity.deliveryservice.order.domain.entity.OrderProgress;
 import com.opportunity.deliveryservice.order.domain.repository.OrderRepository;
 import com.opportunity.deliveryservice.payment.domain.entity.Payment;
 import com.opportunity.deliveryservice.payment.domain.entity.PaymentStatus;
@@ -65,17 +66,21 @@ public class PaymentService {
 		persistPaymentInfo(payment, request);
 
 		processConfirmInNewTx(payment.getId(), request);
+
+		order.changeProgress(OrderProgress.ORDER_CONFIRMED);
 	}
 
 	/**
 	 * 결제 취소
-	 * @param request
+	 * @param paymentKey
+	 * @param cancelReason
+	 * @param user
 	 */
 	@Transactional(noRollbackFor = OpptyException.class)
-	public void cancelPayment(CancelPaymentRequest request, User user) {
-		verifyPaymentAuthorization(user, request.paymentKey());
+	public void cancelPayment(String paymentKey,  String cancelReason, User user) {
+		verifyPaymentAuthorization(user, paymentKey);
 
-		processCancelInNewTx(request);
+		processCancelInNewTx(paymentKey,cancelReason);
 	}
 
 	/**
@@ -116,13 +121,13 @@ public class PaymentService {
 
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = OpptyException.class)
-	public void processCancelInNewTx(CancelPaymentRequest request) {
-		Payment payment = paymentRepository.findByTossPaymentKey(request.paymentKey()).orElseThrow(
+	public void processCancelInNewTx(String paymentKey, String cancelReason ) {
+		Payment payment = paymentRepository.findByTossPaymentKey(paymentKey).orElseThrow(
 			() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND)
 		);
 
 		try {
-			TossPaymentResponse res = tossPaymentService.cancel(request.paymentKey(), request);
+			TossPaymentResponse res = tossPaymentService.cancel(paymentKey, cancelReason);
 			payment.setPaymentCancelInfo(
 				res.getStatus(),
 				res.getCancels().get(res.getCancels().size() - 1).getCanceledAt(),
