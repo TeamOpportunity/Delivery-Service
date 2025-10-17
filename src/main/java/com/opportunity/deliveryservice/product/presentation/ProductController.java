@@ -23,12 +23,14 @@ import com.opportunity.deliveryservice.product.presentation.dto.request.CreatePr
 import com.opportunity.deliveryservice.product.presentation.dto.request.UpdateProductRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.response.GetProductResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/products")
+@Tag(name = "Product", description = "상품 API")
 public class ProductController {
 	private final ProductService productService;
 

@@ -5,6 +5,7 @@ import com.opportunity.deliveryservice.search.dto.response.ProductSearchPageDto;
 import com.opportunity.deliveryservice.search.dto.response.SearchResultDto;
 import com.opportunity.deliveryservice.search.service.SearchService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/search")
 @RequiredArgsConstructor
+@Tag(name = "Search", description = "검색 API")
 public class SearchController {
 
 	private final SearchService searchService;
