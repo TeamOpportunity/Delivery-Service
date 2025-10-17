@@ -92,6 +92,18 @@ jwt:
 gemini:
   url: https://generativelanguage.googleapis.com/v1beta
   api-key: api키
+  
+toss:
+  base-url: https://api.tosspayments.com/
+  secret-key: 시크릿키
+
+feign:
+  client:
+    config:
+      tossPaymentsClient:
+        loggerLevel: FULL
+        connectTimeout: 5000
+        readTimeout: 10000
 ```
 
 -   스프링 부트 실행
@@ -146,3 +158,8 @@ gemini:
 ## ERD
 
 ![프로젝트 구조 다이어그램](./readme/erd.png)
+
+
+## API 명세서
+
+[API명세서 노션 링크](https://www.notion.so/teamsparta/27a2dc3ef51481908b12d2909597546c?v=27a2dc3ef51481a49086000cf86569ba)
