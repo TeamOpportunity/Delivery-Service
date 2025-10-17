@@ -3,6 +3,7 @@ package com.opportunity.deliveryservice.order.presentation;
 import java.util.UUID;
 
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.opportunity.deliveryservice.global.common.response.ApiResponse;
 import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
 import com.opportunity.deliveryservice.order.application.service.OrderService;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CancelOrderRequest;
+import com.opportunity.deliveryservice.order.presentation.dto.request.ChangeOrderProgressRequest;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CreateOrderRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
 
@@ -44,6 +46,17 @@ public class OrderController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
 		orderService.cancelOrder(orderId, request.cancelReason(), userDetails.getUser());
+		return ApiResponse.noContent();
+	}
+
+	@PostMapping("/{orderId}/changes")
+	@Secured("ROLE_OWNER")
+	public ApiResponse<?> changeOrderProgress(
+		@PathVariable UUID orderId,
+		@RequestBody ChangeOrderProgressRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
+	) {
+		orderService.changeProgress(orderId, request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 }
