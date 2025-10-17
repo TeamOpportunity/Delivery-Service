@@ -1,4 +1,4 @@
-package com.opportunity.deliveryservice.order.presentation;
+package com.opportunity.deliveryservice.order.presentation.controller;
 
 import java.util.UUID;
 
@@ -15,7 +15,6 @@ import com.opportunity.deliveryservice.global.infrastructure.config.security.Use
 import com.opportunity.deliveryservice.order.application.service.OrderService;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CancelOrderRequest;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CreateOrderRequest;
-import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
 
 import lombok.RequiredArgsConstructor;
 
