@@ -60,8 +60,9 @@ public class OrderQueryServiceV1 {
 		return orders.stream()
 			.map(o -> {
 				OrderProduct orderProduct = opByOrderId.get(o.getId());
-				ResOrderProductDto productDto = orderProduct != null ? ResOrderProductDto.fromEntity(orderProduct) : null;
-				return ResOrderListDto.fromEntity(o,productDto);
+				ResOrderProductDto productDto = orderProduct != null
+					? ResOrderProductDto.fromEntity(orderProduct) : null;
+				return ResOrderListDto.fromEntity(o, productDto);
 			})
 			.toList();
 	}
