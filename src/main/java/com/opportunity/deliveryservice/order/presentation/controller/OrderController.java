@@ -1,8 +1,9 @@
-package com.opportunity.deliveryservice.order.presentation;
+package com.opportunity.deliveryservice.order.presentation.controller;
 
 import java.util.UUID;
 
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,14 +15,16 @@ import com.opportunity.deliveryservice.global.common.response.ApiResponse;
 import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
 import com.opportunity.deliveryservice.order.application.service.OrderService;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CancelOrderRequest;
+import com.opportunity.deliveryservice.order.presentation.dto.request.ChangeOrderProgressRequest;
 import com.opportunity.deliveryservice.order.presentation.dto.request.CreateOrderRequest;
-import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/orders")
+@Tag(name = "Order", description = "주문 API")
 public class OrderController {
 
 	private final OrderService orderService;
@@ -44,6 +47,17 @@ public class OrderController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
 		orderService.cancelOrder(orderId, request.cancelReason(), userDetails.getUser());
+		return ApiResponse.noContent();
+	}
+
+	@PostMapping("/{orderId}/changes")
+	@Secured("ROLE_OWNER")
+	public ApiResponse<?> changeOrderProgress(
+		@PathVariable UUID orderId,
+		@RequestBody ChangeOrderProgressRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
+	) {
+		orderService.changeProgress(orderId, request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 }

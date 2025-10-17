@@ -198,6 +198,10 @@ public class UserServiceV1 {
 			encodedNewPassword = passwordEncoder.encode(requestDto.getNewPassword());
 		}
 
+		if (userRepository.existsByEmail((requestDto.getEmail()))) {
+			throw new OpptyException(ClientErrorCode.DUPLICATE_EMAIL);
+		}
+
 		// 2. 정보 업데이트
 		user.update(requestDto, encodedNewPassword);
 	}

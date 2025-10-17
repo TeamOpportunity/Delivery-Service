@@ -21,11 +21,13 @@ import com.opportunity.deliveryservice.review.presentation.dto.request.CreateRep
 import com.opportunity.deliveryservice.review.presentation.dto.request.UpdateReplyRequest;
 import com.opportunity.deliveryservice.review.presentation.dto.response.GetReplyResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/reviews/{reviewId}/reply")
+@Tag(name = "Review", description = "리뷰 API")
 public class ReplyController {
 
 	private final ReplyService replyService;

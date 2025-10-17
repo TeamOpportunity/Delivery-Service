@@ -36,6 +36,7 @@ import com.opportunity.deliveryservice.user.presentation.dto.request.UserUpdateR
 import com.opportunity.deliveryservice.user.presentation.dto.response.AddressResponseDto;
 import com.opportunity.deliveryservice.user.presentation.dto.response.UserResponseDto;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "User", description = "유저 API")
 public class UserControllerV1 {
 
 	private final UserServiceV1 userService;
@@ -142,11 +144,23 @@ public class UserControllerV1 {
 	@PutMapping("/me")
 	public ResponseEntity<ApiResponse<Void>> updateProfile(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@Valid @RequestBody UserUpdateRequestDto requestDto
+		@Valid @RequestBody UserUpdateRequestDto requestDto,
+		@CookieValue(value = JwtUtil.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken,
+		HttpServletRequest request,
+		HttpServletResponse response
 	) {
 		userService.updateUser(userDetails.getUser().getId(), requestDto, userDetails.getUser());
+
+		// 비밀번호 변경 시 기존 토큰 폐기
+		if (requestDto.getNewPassword() != null) {
+			String accessToken = JwtUtil.getJwtFromHeader(request);
+			userService.logout(accessToken, refreshToken);
+			jwtUtil.deleteCookie(response, JwtUtil.REFRESH_TOKEN_COOKIE_NAME);
+		}
+
 		return ResponseEntity.ok(ApiResponse.successNoData("200 OK", "회원정보 수정에 성공했습니다!"));
 	}
+
 
 	/**
 	 * 회원 탈퇴 (Soft Delete)
@@ -154,11 +168,21 @@ public class UserControllerV1 {
 	@DeleteMapping("/me")
 	public ResponseEntity<ApiResponse<Void>> deleteUser(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody UserDeleteRequestDto requestDto
+		@RequestBody UserDeleteRequestDto requestDto,
+		@CookieValue(value = JwtUtil.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken,
+		HttpServletRequest request,
+		HttpServletResponse response
 	) {
 		userService.deleteUser(userDetails.getUser().getId(), requestDto.getPassword(), userDetails.getUser());
+
+		// 탈퇴 후 기존 토큰 폐기
+		String accessToken = JwtUtil.getJwtFromHeader(request);
+		userService.logout(accessToken, refreshToken);
+		jwtUtil.deleteCookie(response, JwtUtil.REFRESH_TOKEN_COOKIE_NAME);
+
 		return ResponseEntity.ok(ApiResponse.successNoData("200 OK", "성공적으로 회원탈퇴되었습니다!"));
 	}
+
 
 	// --- 주소록 (Address) CRUD ---
 

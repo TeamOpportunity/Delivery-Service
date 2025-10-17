@@ -159,4 +159,8 @@ public class StoreService {
         // 3. 가게 소프트 삭제
         store.delete(userId);
     }
+
+    public boolean checkOwner(UUID storeId, Long userId) {
+        return storeRepository.existsByIdAndUserId(storeId, userId);
+    }
 }

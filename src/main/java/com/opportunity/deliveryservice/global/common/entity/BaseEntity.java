@@ -31,10 +31,10 @@ public abstract class BaseEntity {
 
 	private LocalDateTime deletedAt;
 
-	private String deletedBy;
+	private Long deletedBy;
 
 	public void softDelete(Long deletedBy) {
 		this.deletedAt = LocalDateTime.now();
-		this.deletedBy = String.valueOf(deletedBy);
+		this.deletedBy = deletedBy;
 	}
 }

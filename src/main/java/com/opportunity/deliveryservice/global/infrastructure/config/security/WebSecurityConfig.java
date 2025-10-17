@@ -86,6 +86,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/v1/users/signup", "/v1/users/login").permitAll()
 				.requestMatchers(HttpMethod.GET, "/v1/stores/*/reviews").permitAll()
 				.requestMatchers(HttpMethod.GET, "/v1/reviews/*").permitAll()
+				.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 				// 권한이 필요 없는 요청 접근 허가
 				// "/v1/users/sighup","/v1/users/login"로 시작하는 요청 모두 접근 허가
 				.anyRequest()

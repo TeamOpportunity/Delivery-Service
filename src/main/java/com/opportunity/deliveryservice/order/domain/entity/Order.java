@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
 import com.opportunity.deliveryservice.review.domain.entity.Review;
+import com.opportunity.deliveryservice.payment.domain.entity.Payment;
+import com.opportunity.deliveryservice.store.domain.entity.Store;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import jakarta.persistence.CascadeType;
@@ -46,12 +48,15 @@ public class Order extends BaseEntity {
 	// 주문과 리뷰 1:1
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Review review;
+	@ManyToOne(fetch = FetchType.LAZY)
+	Store store;
 
 	@Builder
-	public Order(Integer amount, String request, User user) {
+	public Order(Integer amount, String request, User user, Store store) {
 		this.amount = amount;
 		this.request = request;
 		this.user = user;
+		this.store = store;
 	}
 
 	// 편의 메서드

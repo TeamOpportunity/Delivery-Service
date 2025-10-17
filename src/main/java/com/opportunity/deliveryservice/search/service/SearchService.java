@@ -8,6 +8,8 @@ import com.opportunity.deliveryservice.search.dto.response.SearchResultDto;
 import com.opportunity.deliveryservice.search.dto.response.StoreSearchResultDto;
 import com.opportunity.deliveryservice.store.domain.entity.Store;
 import com.opportunity.deliveryservice.store.domain.repository.StoreRepository;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Tag(name = "Search", description = "검색 API")
 public class SearchService {
 
     private final StoreRepository storeRepository;
