@@ -14,6 +14,7 @@ import com.opportunity.deliveryservice.product.domain.entity.Product;
 import com.opportunity.deliveryservice.product.domain.repository.ProductRepository;
 import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.request.UpdateProductRequest;
+import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,12 +28,12 @@ public class ProductService {
 	private final StoreRepository storeRepository;
 
 	@Transactional
-	public void createProduct(CreateProductRequest request) {
-		validate();
-
+	public void createProduct(CreateProductRequest request, User user) {
 		// StoreRepository에서 Store 조회
 		Store store = storeRepository.findByIdAndNotDeleted(request.storeId())
 				.orElseThrow(() -> new OpptyException(RESOURCE_NOT_FOUND));
+
+		validate(store, user);
 
 		Product newProduct = Product.builder()
 			.title(request.title())
@@ -52,32 +53,30 @@ public class ProductService {
 	}
 
 	@Transactional
-	public void updateProduct(UpdateProductRequest request, UUID productId) {
-		validate();
-
+	public void updateProduct(UpdateProductRequest request, UUID productId, User user) {
 		Product product = getProduct(productId);
+		validate(product.getStore(), user);
+
 		product.updateProduct(request.title(), request.description(), request.price(), request.category(), request.image());
 	}
 
 	@Transactional
-	public void deleteProduct(UUID productId, Long userId) {
-		validate();
-
+	public void deleteProduct(UUID productId, User user) {
 		Product product = getProduct(productId);
-		product.softDelete(userId);
+		validate(product.getStore(), user);
+
+		product.softDelete(user.getId());
 	}
 	@Transactional
-	public void updateProductVisibility(UUID productId) {
-		validate();
-
+	public void updateProductVisibility(UUID productId, User user) {
 		Product product = getProduct(productId);
+		validate(product.getStore(), user);
+
 		product.changeVisible();
 	}
 
 	@Transactional(readOnly = true)
 	public Product getProductDetail(UUID productId) {
-		validate();
-
 		return getProduct(productId);
 	}
 
@@ -96,8 +95,10 @@ public class ProductService {
 		return geminiService.createProductDescription(prompt, product);
 	}
 
-	private void validate(){
-		//todo 가게id 및 사용자id 검증
+	private void validate(Store store, User user){
+		if(!store.getUserId().equals(user.getId())){
+			throw new OpptyException(ClientErrorCode.FORBIDDEN);
+		}
 	}
 
 }

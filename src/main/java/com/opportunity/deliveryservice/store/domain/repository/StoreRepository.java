@@ -52,4 +52,6 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
             "LEFT JOIN FETCH sc.category " +
             "WHERE s.id IN :ids AND s.deletedAt IS NULL")
     List<Store> findAllByIdAndNotDeleted(@Param("ids") List<UUID> ids);
+
+    boolean existsByIdAndUserId(UUID id, Long userId);
 }

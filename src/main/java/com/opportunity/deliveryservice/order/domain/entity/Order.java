@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
 import com.opportunity.deliveryservice.payment.domain.entity.Payment;
+import com.opportunity.deliveryservice.store.domain.entity.Store;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import jakarta.annotation.Nullable;
@@ -45,11 +46,15 @@ public class Order extends BaseEntity {
 
 	String request;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	Store store;
+
 	@Builder
-	public Order(Integer amount, String request, User user) {
+	public Order(Integer amount, String request, User user, Store store) {
 		this.amount = amount;
 		this.request = request;
 		this.user = user;
+		this.store = store;
 	}
 
 	public void changeProgress(OrderProgress progress){

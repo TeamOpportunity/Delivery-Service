@@ -36,6 +36,7 @@ import com.opportunity.deliveryservice.user.presentation.dto.request.UserUpdateR
 import com.opportunity.deliveryservice.user.presentation.dto.response.AddressResponseDto;
 import com.opportunity.deliveryservice.user.presentation.dto.response.UserResponseDto;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "User", description = "유저 API")
 public class UserControllerV1 {
 
 	private final UserServiceV1 userService;

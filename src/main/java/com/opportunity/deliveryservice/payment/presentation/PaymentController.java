@@ -20,11 +20,13 @@ import com.opportunity.deliveryservice.payment.presentation.dto.request.ConfirmP
 import com.opportunity.deliveryservice.payment.presentation.dto.request.IntentPaymentRequest;
 import com.opportunity.deliveryservice.payment.presentation.dto.response.PaymentResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/payments")
+@Tag(name = "Payment", description = "결제 API")
 public class PaymentController {
 
 	private final PaymentService paymentService;

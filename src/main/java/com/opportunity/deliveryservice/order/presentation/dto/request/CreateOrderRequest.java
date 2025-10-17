@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.opportunity.deliveryservice.product.domain.entity.Product;
 
 public record CreateOrderRequest(
-	Long storeId,
+	UUID storeId,
 	Integer amount,
 	String request,
 	List<ProductRequest> productList
