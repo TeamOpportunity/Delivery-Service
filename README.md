@@ -157,8 +157,7 @@ feign:
 
 ## ERD
 
-![프로젝트 구조 다이어그램](./readme/erd.png)
-
+![프로젝트 구조 다이어그램](./readme/erd_최종.png)
 
 ## API 명세서
 
