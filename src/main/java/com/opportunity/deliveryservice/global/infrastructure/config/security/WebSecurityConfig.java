@@ -3,6 +3,7 @@ package com.opportunity.deliveryservice.global.infrastructure.config.security;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -82,8 +83,11 @@ public class WebSecurityConfig {
 				.permitAll() // resources 접근 허용 설정
 				.requestMatchers("/")
 				.permitAll() // 메인 페이지 요청 허가
-				.requestMatchers("/v1/users/signup", "/v1/users/login")
-				.permitAll() // "/v1/users/sighup","/v1/users/login"로 시작하는 요청 모두 접근 허가
+				.requestMatchers("/v1/users/signup", "/v1/users/login").permitAll()
+				.requestMatchers(HttpMethod.GET, "/v1/stores/*/reviews").permitAll()
+				.requestMatchers(HttpMethod.GET, "/v1/reviews/*").permitAll()
+				// 권한이 필요 없는 요청 접근 허가
+				// "/v1/users/sighup","/v1/users/login"로 시작하는 요청 모두 접근 허가
 				.anyRequest()
 				.authenticated() // 그 외 모든 요청 인증처리
 		);
