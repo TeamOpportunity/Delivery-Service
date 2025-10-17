@@ -4,8 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -22,6 +24,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.SQLDelete;
 
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
+import com.opportunity.deliveryservice.store.domain.entity.Store;
 
 @Getter
 @Entity
@@ -52,17 +55,23 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	private boolean isVisible = true;
 
-	// @ManyToOne
-	// private Store store
-
+	// 연관관계: Product -> Store (단방향)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "store_id", nullable = false)
+	private Store store;
 
 	@Builder
-	public Product(String title, String description, Long price, ProductCategory category, String image){
+	public Product(String title, String description, Long price, ProductCategory category, String image, Store store){
 		this.title = title;
 		this.description = description;
 		this.price = price;
 		this.category = category;
 		this.image = image;
+		this.store = store;
+	}
+
+	public UUID getStoreId() {
+		return store != null ? store.getId() : null;
 	}
 
 	public void setDescription(String description) {

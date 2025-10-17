@@ -22,6 +22,7 @@ public enum ServerErrorCode implements BaseErrorCode {
 	// 500 Internal Server Error
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OPPTY-CMN-500-01", "서버 내부 오류가 발생했습니다. 관리자에게 문의해주세요."),
 	DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OPPTY-CMN-500-02", "데이터베이스 처리 중 오류가 발생했습니다."),
+	INVALID_PAYMENT_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "OPPTY-PAY-500-01", "결제 승인 상태가 비정상입니다."),
 
 	// 503 Service Unavailable
 	SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "OPPTY-CMN-503-01", "현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해주세요.");
