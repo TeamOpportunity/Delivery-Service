@@ -2,6 +2,8 @@ package com.opportunity.deliveryservice.product.application.service;
 
 import java.util.UUID;
 
+import com.opportunity.deliveryservice.store.domain.entity.Store;
+import com.opportunity.deliveryservice.store.domain.repository.StoreRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +17,22 @@ import com.opportunity.deliveryservice.product.presentation.dto.request.UpdatePr
 
 import lombok.RequiredArgsConstructor;
 
+import static com.opportunity.deliveryservice.global.common.code.ClientErrorCode.RESOURCE_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 	private final ProductRepository productRepository;
 	private final GeminiService geminiService;
+	private final StoreRepository storeRepository;
 
 	@Transactional
 	public void createProduct(CreateProductRequest request) {
 		validate();
+
+		// StoreRepository에서 Store 조회
+		Store store = storeRepository.findByIdAndNotDeleted(request.storeId())
+				.orElseThrow(() -> new OpptyException(RESOURCE_NOT_FOUND));
 
 		Product newProduct = Product.builder()
 			.title(request.title())
@@ -31,6 +40,7 @@ public class ProductService {
 			.description(request.description())
 			.image(request.image())
 			.category(request.category())
+			.store(store)
 			.build();
 
 		if(request.useAI()){
