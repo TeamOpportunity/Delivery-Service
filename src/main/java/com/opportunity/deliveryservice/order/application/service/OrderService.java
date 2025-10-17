@@ -21,9 +21,10 @@ import com.opportunity.deliveryservice.payment.domain.entity.Payment;
 import com.opportunity.deliveryservice.payment.domain.repository.PaymentRepository;
 import com.opportunity.deliveryservice.product.domain.entity.Product;
 import com.opportunity.deliveryservice.product.domain.repository.ProductRepository;
+import com.opportunity.deliveryservice.store.domain.entity.Store;
+import com.opportunity.deliveryservice.store.domain.repository.StoreRepository;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 import com.opportunity.deliveryservice.user.domain.entity.UserRoleEnum;
-import com.opportunity.deliveryservice.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,9 +36,15 @@ public class OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final PaymentService paymentService;
 	private final PaymentRepository paymentRepository;
+	private final StoreRepository storeRepository;
 
 	@Transactional
 	public void createOrder(CreateOrderRequest req, User user) {
+		Store store = storeRepository.findById(req.storeId()).orElseThrow(
+			() -> new OpptyException(ClientErrorCode.RESOURCE_NOT_FOUND)
+		);
+		validateMinPrice(store, req.amount());
+
 		Order newOrder = Order.builder()
 			.amount(req.amount())
 			.user(user)
@@ -76,20 +83,27 @@ public class OrderService {
 
 		Payment payment = paymentRepository.findByOrder(order);
 
-		validate(order, user);
+		validateCancellable(order, user);
 
 		paymentService.cancelPayment(payment.getTossPaymentKey(), cancelReason, user);
 		order.changeProgress(OrderProgress.CANCELED);
 	}
 
-	private void validate(Order order, User user){
+	private void validateMinPrice(Store store, Integer amount){
+		if(store.getMinOrderPrice() > amount){
+			throw new OpptyException(ClientErrorCode.ORDER_MIN_PRICE_NOT_MET);
+		}
+	}
+
+	private void validateCancellable(Order order, User user){
 		if(user.getRole().equals(UserRoleEnum.CUSTOMER) && !order.getUser().equals(user)){
 			throw new OpptyException(ClientErrorCode.FORBIDDEN);
 		}
 
-		// if(user.getRole().equals(UserRoleEnum.OWNER) && !order.getStore().equals(user)){
-		// 	throw new OpptyException(ClientErrorCode.FORBIDDEN);
-		// }
+		// 가게 사장도 취소 가능
+		if(user.getRole().equals(UserRoleEnum.OWNER) && !order.getStore().getUserId().equals(user.getId())){
+			throw new OpptyException(ClientErrorCode.FORBIDDEN);
+		}
 
 		if(order.getProgress().equals(OrderProgress.ORDER_CONFIRMED)){
 			throw new OpptyException(ClientErrorCode.ORDER_ALREADY_CONFIRMED);
