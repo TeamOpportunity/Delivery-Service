@@ -6,6 +6,8 @@ import com.opportunity.deliveryservice.store.application.service.StoreService;
 import com.opportunity.deliveryservice.store.presentation.dto.request.StoreCreateReq;
 import com.opportunity.deliveryservice.store.presentation.dto.request.StoreUpdateReq;
 import com.opportunity.deliveryservice.store.presentation.dto.response.StoreGetRes;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/stores")
 @RequiredArgsConstructor
+@Tag(name = "Store", description = "가게 API")
 public class StoreController {
 
     private final StoreService storeService;

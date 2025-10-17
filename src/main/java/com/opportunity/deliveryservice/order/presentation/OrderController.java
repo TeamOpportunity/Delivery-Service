@@ -19,11 +19,13 @@ import com.opportunity.deliveryservice.order.presentation.dto.request.ChangeOrde
 import com.opportunity.deliveryservice.order.presentation.dto.request.CreateOrderRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/orders")
+@Tag(name = "Order", description = "주문 API")
 public class OrderController {
 
 	private final OrderService orderService;

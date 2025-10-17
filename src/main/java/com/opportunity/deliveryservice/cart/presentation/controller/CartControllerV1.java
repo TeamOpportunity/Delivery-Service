@@ -20,11 +20,13 @@ import com.opportunity.deliveryservice.cart.presentation.dto.response.ResCartPro
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
 import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/cart")
+@Tag(name = "Cart", description = "장바구니 API")
 public class CartControllerV1 {
 	private final CartServiceV1 cartServiceV1;
 

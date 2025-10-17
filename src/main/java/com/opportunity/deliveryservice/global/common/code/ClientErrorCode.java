@@ -56,7 +56,8 @@ public enum ClientErrorCode implements BaseErrorCode {
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "OPPTY-USR-409-03", "아이디 또는 비밀번호가 일치하지 않습니다."),
 	INVALID_ADMIN_KEY(HttpStatus.FORBIDDEN, "OPPTY-USR-409-04", "유효하지 않은 관리자 인증 키입니다."),
 	ORDER_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "OPPTY-ORD-409-01", "이미 주문이 허락되어 준비중입니다."),
-	CANCELLATION_TIME_EXPIRED(HttpStatus.CONFLICT, "OPPTY-ORD-409-02", "주문 취소 가능한 시간이 지났습니다.");
+	ORDER_MIN_PRICE_NOT_MET(HttpStatus.BAD_REQUEST, "OPPTY-ORD-409-02", "최소 주문 금액을 만족하지 않습니다."),
+	CANCELLATION_TIME_EXPIRED(HttpStatus.CONFLICT, "OPPTY-ORD-409-03", "주문 취소 가능한 시간이 지났습니다.");
 
 
 	private final HttpStatus httpStatus;
