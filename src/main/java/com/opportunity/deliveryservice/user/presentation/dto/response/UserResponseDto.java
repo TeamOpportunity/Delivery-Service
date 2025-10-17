@@ -27,9 +27,9 @@ public class UserResponseDto {
 		this.createdAt = user.getCreatedAt();
 		this.deletedAt = user.getDeletedAt();
 
-		// Soft Delete 되지 않은 주소만 필터링하여 반환
+		// 전체 주소 반환(UserServiceV1의 관리자 전용 조회 메서드(세선 필터)에서 제어)
 		this.addressList = user.getAddressList().stream()
-			.filter(address -> address.getDeletedAt() == null)
+			// .filter(address -> address.getDeletedAt() == null)
 			.map(AddressResponseDto::new)
 			.collect(Collectors.toList());
 	}

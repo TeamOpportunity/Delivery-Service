@@ -207,7 +207,7 @@ public class UserControllerV1 {
 	 * 관리자 전용: 모든 사용자 정보 조회 (Search/Paging/Sort)
 	 * MASTER/MANAGER 권한만 접근 가능
 	 */
-	@Secured("ROLE_MASTER") // 권한이 MASTER만 접근 가능
+	@Secured("ROLE_MANAGER") // 권한이 MASTER, MANAGER만 접근 가능
 	@GetMapping("/admin")
 	public ResponseEntity<ApiResponse<Page<UserResponseDto>>> searchUsers(
 		AdminSearchUserRequestDto requestDto // @RequestParam 파라미터가 DTO에 자동으로 바인딩
