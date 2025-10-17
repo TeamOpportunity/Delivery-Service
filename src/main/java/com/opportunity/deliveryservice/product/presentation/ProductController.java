@@ -2,6 +2,9 @@ package com.opportunity.deliveryservice.product.presentation;
 
 import java.util.UUID;
 
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
+import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
 import com.opportunity.deliveryservice.product.application.service.ProductService;
 import com.opportunity.deliveryservice.product.presentation.dto.request.CreateProductRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.request.UpdateProductRequest;
 import com.opportunity.deliveryservice.product.presentation.dto.response.GetProductResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,49 +34,53 @@ public class ProductController {
 
 
 	@PostMapping
+	@Secured("ROLE_OWNER")
 	public ApiResponse<?> createProduct(
-		@RequestBody CreateProductRequest request
-		// @AuthenticationPrincipal
+		@Valid @RequestBody CreateProductRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		productService.createProduct(request);
+		productService.createProduct(request, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
 	@PutMapping("/{productId}")
+	@Secured("ROLE_OWNER")
 	public ApiResponse<?> updateProduct(
 		@PathVariable UUID productId,
-		@RequestBody UpdateProductRequest request
-		// @AuthenticationPrincipal
+		@RequestBody UpdateProductRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	){
-		productService.updateProduct(request, productId);
+		productService.updateProduct(request, productId, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
 	@PatchMapping("/{productId}")
+	@Secured("ROLE_OWNER")
 	public ApiResponse<?> deleteProduct(
-		@PathVariable UUID productId
-		// @AuthenticationPrincipal
+		@PathVariable UUID productId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	){
-		productService.deleteProduct(productId, 1L); //todo- userId 변경
+		productService.deleteProduct(productId, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
 
 	@GetMapping("/{productId}")
 	public ApiResponse<GetProductResponse> getProductDetail(
-		@PathVariable UUID productId
-		// @AuthenticationPrincipal
+		@PathVariable UUID productId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	){
 		GetProductResponse response = GetProductResponse.of(productService.getProductDetail(productId));
 		return ApiResponse.success(response);
 	}
 
 	@PatchMapping("/{productId}/visibility")
+	@Secured("ROLE_OWNER")
 	public ApiResponse<?> updateProductVisibility(
-		@PathVariable UUID productId
-		// @AuthenticationPrincipal
+		@PathVariable UUID productId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
 	){
-		productService.updateProductVisibility(productId);
+		productService.updateProductVisibility(productId, userDetails.getUser());
 		return ApiResponse.noContent();
 	}
 
