@@ -24,7 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query(value = """
 		SELECT DISTINCT u 
 		FROM User u 
-		JOIN FETCH u.addressList
 		WHERE 
 		    (:keyword IS NULL OR u.username LIKE :keyword OR u.email LIKE :keyword)
 		    AND (:role IS NULL OR u.role = :role)

@@ -3,6 +3,7 @@ package com.opportunity.deliveryservice.user.domain.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
@@ -60,6 +61,7 @@ public class User extends BaseEntity {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Filter(name = "deletedAddressFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
+	@BatchSize(size = 100)
 	private List<Address> addressList = new ArrayList<>();
 
 	public User(UserSignupRequestDto requestDto, String encodedPassword) {
