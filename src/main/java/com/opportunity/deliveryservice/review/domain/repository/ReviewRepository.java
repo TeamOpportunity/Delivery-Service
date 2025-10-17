@@ -12,7 +12,7 @@ import com.opportunity.deliveryservice.review.domain.entity.Review;
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
 	@EntityGraph(attributePaths = "reply")
 		//n+1문제 해결
-	Page<Review> findByStoreIdAndDeletedAtIsNull(Long storeId, Pageable pageable);
+	Page<Review> findByStoreIdAndDeletedAtIsNull(UUID storeId, Pageable pageable);
 
 	Page<Review> findByUserIdAndDeletedAtIsNull(Long targetUserId, Pageable pageable);
 

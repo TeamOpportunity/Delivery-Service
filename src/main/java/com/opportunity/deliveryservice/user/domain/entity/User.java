@@ -9,6 +9,7 @@ import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
+import com.opportunity.deliveryservice.review.domain.entity.Review;
 import com.opportunity.deliveryservice.user.presentation.dto.request.UserSignupRequestDto;
 import com.opportunity.deliveryservice.user.presentation.dto.request.UserUpdateRequestDto;
 
@@ -23,12 +24,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 접근 수준을 PROTECTED로 설정
 // SQL Delete문을 실행하지않고(삭제 처리 하지않고) Update(soft delete)문 실행
 
@@ -61,6 +66,10 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Filter(name = "deletedAddressFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
 	private List<Address> addressList = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Review> reviews = new ArrayList<>();
 
 	public User(UserSignupRequestDto requestDto, String encodedPassword) {
 		this.username = requestDto.getUsername();

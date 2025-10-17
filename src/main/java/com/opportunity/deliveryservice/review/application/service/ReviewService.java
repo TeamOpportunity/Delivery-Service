@@ -5,18 +5,19 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
-import com.opportunity.deliveryservice.global.infrastructure.config.security.UserDetailsImpl;
+import com.opportunity.deliveryservice.order.domain.entity.Order;
+import com.opportunity.deliveryservice.order.domain.repository.OrderRepository;
 import com.opportunity.deliveryservice.review.domain.entity.Review;
 import com.opportunity.deliveryservice.review.domain.repository.ReviewRepository;
 import com.opportunity.deliveryservice.review.presentation.dto.request.CreateReviewRequest;
 import com.opportunity.deliveryservice.review.presentation.dto.request.UpdateReviewRequest;
+import com.opportunity.deliveryservice.store.domain.entity.Store;
+import com.opportunity.deliveryservice.store.domain.repository.StoreRepository;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -26,19 +27,36 @@ import lombok.RequiredArgsConstructor;
 public class ReviewService {
 	private final ReviewRepository reviewRepository;
 
-	@Transactional
-	public void createReview(CreateReviewRequest request, Long storeId, User user) {
+	private final StoreRepository storeRepository;
 
-		//주문 했는지
-		//주문을 하고 첫 리뷰인지.
+	private final OrderRepository orderRepository;
+
+	@Transactional
+	public void createReview(CreateReviewRequest request, UUID storeId, UUID orderId, User user) {
+
+		Store store = storeRepository.findById(storeId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.STORE_NOT_FOUND));
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.ORDER_NOT_FOUND));
+
+		//주문자가 현재 사용자인지
+		if (!order.getUser().getId().equals(user.getId())) {
+			throw new OpptyException(ClientErrorCode.INVALID_ORDER_USER);
+		}
+
+		//주문을 하고 첫 리뷰인지
+		if (order.getReview() != null) {
+			throw new OpptyException(ClientErrorCode.ORDER_ALREADY_REVIEWED);
+		}
 
 		Review newReview = Review.builder()
 			.content(request.content())
 			.image(request.image())
-			.storeId(storeId)
 			.user(user)
 			.build();
 		newReview.setRating(request.rating());
+		newReview.setStore(store);
+		newReview.setOrder(order);
 
 		reviewRepository.save(newReview);
 	}
@@ -69,7 +87,7 @@ public class ReviewService {
 
 	//가게 리뷰 조회
 	@Transactional(readOnly = true)
-	public List<Review> getStoreReviews(Long storeId, Pageable pageable) {
+	public List<Review> getStoreReviews(UUID storeId, Pageable pageable) {
 		Page<Review> reviewPage = reviewRepository.findByStoreIdAndDeletedAtIsNull(storeId, pageable);
 		return findReviews(reviewPage);
 	}
@@ -86,8 +104,8 @@ public class ReviewService {
 
 	//관리자용 유저 리뷰 조회
 	@Transactional(readOnly = true)
-	public List<Review> getUserReviewsForAdmin(Long targetUserId, Pageable pageable) {
-		validateAdmin();
+	public List<Review> getUserReviewsForAdmin(Long targetUserId, Pageable pageable, User currentUser) {
+		validateAdmin(currentUser);
 
 		Page<Review> userReviewPage = reviewRepository.findByUserIdAndDeletedAtIsNull(targetUserId, pageable);
 
@@ -107,8 +125,7 @@ public class ReviewService {
 	}
 
 	//관리자인지
-	private void validateAdmin() {
-		User currentUser = getCurrentUser();
+	private void validateAdmin(User currentUser) {
 		String role = currentUser.getRole().toString();
 		if (!"MANAGER".equals(role) && !"MASTER".equals(role)) {
 			throw new OpptyException(ClientErrorCode.FORBIDDEN);
@@ -123,15 +140,6 @@ public class ReviewService {
 			&& !"MASTER".equals(role)) {
 			throw new OpptyException(ClientErrorCode.FORBIDDEN);
 		}
-	}
-
-	//로그인한 사용자 정보 가져오기
-	private User getCurrentUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || !authentication.isAuthenticated()) {
-			throw new OpptyException(ClientErrorCode.UNAUTHORIZED);
-		}
-		return ((UserDetailsImpl)authentication.getPrincipal()).getUser();
 	}
 
 	private Review getReviewId(UUID reviewId) {
