@@ -2,14 +2,13 @@ package com.opportunity.deliveryservice.order.domain.entity;
 
 import java.util.UUID;
 
-import org.antlr.v4.runtime.misc.NotNull;
-
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
+import com.opportunity.deliveryservice.review.domain.entity.Review;
 import com.opportunity.deliveryservice.payment.domain.entity.Payment;
 import com.opportunity.deliveryservice.store.domain.entity.Store;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 
-import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,6 +45,9 @@ public class Order extends BaseEntity {
 
 	String request;
 
+	// 주문과 리뷰 1:1
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Review review;
 	@ManyToOne(fetch = FetchType.LAZY)
 	Store store;
 
@@ -57,7 +59,17 @@ public class Order extends BaseEntity {
 		this.store = store;
 	}
 
+	// 편의 메서드
+	public void setReview(Review review) {
+		this.review = review;
+		if (review.getOrder() != this) {
+			review.setOrder(this);
+		}
+	}
+
 	public void changeProgress(OrderProgress progress){
 		this.progress = progress;
 	}
 }
+
+

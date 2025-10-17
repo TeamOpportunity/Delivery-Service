@@ -3,7 +3,6 @@ package com.opportunity.deliveryservice.review.presentation.dto.response;
 import com.opportunity.deliveryservice.review.domain.entity.Review;
 
 public record GetReviewResponse(
-	Long storeId,
 	String content,
 	int rating,
 	String image,
@@ -13,6 +12,8 @@ public record GetReviewResponse(
 		GetReplyResponse replyResponse = review.getReply() != null
 			? GetReplyResponse.of(review.getReply())
 			: null;
-		return new GetReviewResponse(review.getStoreId(), review.getContent(), review.getRating(), review.getImage(), replyResponse);
+		return new GetReviewResponse(/*review.getStoreId(),*/ review.getContent(), review.getRating(),
+			review.getImage(),
+			replyResponse);
 	}
 }

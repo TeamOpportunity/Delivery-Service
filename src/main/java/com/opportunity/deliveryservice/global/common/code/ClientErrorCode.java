@@ -26,7 +26,6 @@ public enum ClientErrorCode implements BaseErrorCode {
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "OPPTY-CMN-405-01", "허용되지 않은 HTTP 메서드입니다."),
 	INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "OPPTY-PAY-400-01", "요청 금액과 승인 금액이 다릅니다."),
 
-
 	// 401 Unauthorized
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "OPPTY-CMN-401-01", "인증이 필요한 요청입니다."),
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "OPPTY-CMN-401-02", "유효하지 않은 인증 토큰입니다."),
@@ -35,12 +34,15 @@ public enum ClientErrorCode implements BaseErrorCode {
 
 	// 403 Forbidden
 	INVALID_REPLY_OWNER(HttpStatus.FORBIDDEN, "OPPTY-RPL-403-01", "답글 작성자가 아닙니다."),
+	INVALID_ORDER_USER(HttpStatus.FORBIDDEN, "OPPTY-RPL-403-01", "리뷰 작성 대상이 아닙니다."),
 	INVALID_REVIEW_OWNER(HttpStatus.FORBIDDEN, "OPPTY-RVW-403-01", "리뷰 작성자가 아닙니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "OPPTY-CMN-403-01", "해당 요청에 대한 접근 권한이 없습니다."),
 	UNAUTHORIZED_ROLE_CHANGE(HttpStatus.FORBIDDEN, "OPPTY-USR-403-01", "권한을 변경할 수 있는 권한이 없습니다."),
 	NOT_STORE_OWNER(HttpStatus.NOT_FOUND, "OPPTY-ORD-403-01", "가게 주인이 아닙니다."),
 
 	// 404 Not Found
+	STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-STR-404-01", "가게를 찾을 수 없습니다."),
+	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-STR-404-01", "주문을 찾을 수 없습니다."),
 	REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-RPL-404-01", "존재하지 않는 답글입니다."),
 	RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-CMN-404-01", "요청한 리소스를 찾을 수 없습니다."),
 	ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-ADD-404-01", "주소록을 찾을 수 없습니다."),
@@ -56,9 +58,10 @@ public enum ClientErrorCode implements BaseErrorCode {
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "OPPTY-USR-409-03", "아이디 또는 비밀번호가 일치하지 않습니다."),
 	INVALID_ADMIN_KEY(HttpStatus.FORBIDDEN, "OPPTY-USR-409-04", "유효하지 않은 관리자 인증 키입니다."),
 	ORDER_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "OPPTY-ORD-409-01", "이미 주문이 허락되어 준비중입니다."),
+	ORDER_ALREADY_REVIEWED(HttpStatus.CONFLICT, "OPPTY-ORD-409-01", "이미 주문이 허락되어 준비중입니다."),
+	CANCELLATION_TIME_EXPIRED(HttpStatus.CONFLICT, "OPPTY-ORD-409-02", "주문 취소 가능한 시간이 지났습니다.");
 	ORDER_MIN_PRICE_NOT_MET(HttpStatus.BAD_REQUEST, "OPPTY-ORD-409-02", "최소 주문 금액을 만족하지 않습니다."),
 	CANCELLATION_TIME_EXPIRED(HttpStatus.CONFLICT, "OPPTY-ORD-409-03", "주문 취소 가능한 시간이 지났습니다.");
-
 
 	private final HttpStatus httpStatus;
 	private final String code;

@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Min;
 public record UpdateReviewRequest(
 	@Nullable String content,
 	@Min(1) @Max(5) Integer rating,
-	@Nullable  String image
-) {
+	@Nullable String image) {
 
 }

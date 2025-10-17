@@ -6,11 +6,14 @@ import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.opportunity.deliveryservice.global.common.entity.BaseEntity;
+import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -23,7 +26,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "p_reply")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reply extends BaseEntity{
+public class Reply extends BaseEntity {
 
 	@Id
 	@UuidGenerator
@@ -35,6 +38,8 @@ public class Reply extends BaseEntity{
 	@Column(nullable = false)
 	private boolean isVisible = true; // 기본값 true
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	private User user;
 
 	@Setter
 	@OneToOne
@@ -42,9 +47,10 @@ public class Reply extends BaseEntity{
 	private Review review;
 
 	@Builder
-	public Reply(String content, Review review) {
+	public Reply(String content, Review review, User user) {
 		this.review = review;
 		this.content = content;
+		this.user = user;
 	}
 
 	public void updateReply(String content) {

@@ -42,12 +42,12 @@ public class ReviewController {
 	//리뷰 생성
 	@PostMapping("/stores/{storeId}/reviews")
 	public ApiResponse<?> createReview(
-		@PathVariable Long storeId,
+		@PathVariable UUID storeId,
 		@Valid @RequestBody CreateReviewRequest request,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		User user = principal.getUser();
-		reviewService.createReview(request, storeId, user);
+		reviewService.createReview(request, storeId, request.orderId(), user);
 		return ApiResponse.noContent();
 	}
 
@@ -57,7 +57,7 @@ public class ReviewController {
 		@PathVariable UUID reviewId,
 		@RequestBody UpdateReviewRequest request,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		reviewService.updateReview(request, reviewId, principal.getUser());
 		return ApiResponse.noContent();
 	}
@@ -68,7 +68,7 @@ public class ReviewController {
 		@PathVariable UUID reviewId,
 		@AuthenticationPrincipal UserDetailsImpl principal
 		// Long userId = principal.getId();
-	){
+	) {
 		reviewService.deleteReview(reviewId, principal.getUser());
 		return ApiResponse.noContent();
 	}
@@ -77,11 +77,11 @@ public class ReviewController {
 	//권한이 필요 없으므로 SecurityConfig에서 인증 제외 경로 등록
 	@GetMapping("/stores/{storeId}/reviews")
 	public ApiResponse<List<GetReviewResponse>> getStoreReviews(
-		@PathVariable Long storeId,
+		@PathVariable UUID storeId,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt,desc") String sort
-	){
+	) {
 		size = sanitizePageSize(size);
 		PageRequest pageRequest = buildPageRequest(page, size, sort);
 
@@ -97,10 +97,11 @@ public class ReviewController {
 	@GetMapping("/reviews/{reviewId}")
 	public ApiResponse<GetReviewResponse> getReviewDetail(
 		@PathVariable UUID reviewId
-	){
+	) {
 		Review getReviewDetail = reviewService.getReviewDetail(reviewId);
 		return ApiResponse.success(GetReviewResponse.of(getReviewDetail));
 	}
+
 	//유저용 내 리뷰 페이지
 	@GetMapping("/users/me/reviews")
 	public ApiResponse<List<GetReviewResponse>> getMyReviews(
@@ -108,7 +109,7 @@ public class ReviewController {
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt,desc") String sort,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		size = sanitizePageSize(size);
 		PageRequest pageRequest = buildPageRequest(page, size, sort);
 
@@ -128,11 +129,11 @@ public class ReviewController {
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt,desc") String sort,
 		@AuthenticationPrincipal UserDetailsImpl principal
-	){
+	) {
 		size = sanitizePageSize(size);
 		PageRequest pageRequest = buildPageRequest(page, size, sort);
 
-		List<GetReviewResponse> responses = reviewService.getUserReviewsForAdmin(userId, pageRequest)
+		List<GetReviewResponse> responses = reviewService.getUserReviewsForAdmin(userId, pageRequest,principal.getUser())
 			.stream()
 			.map(GetReviewResponse::of)
 			.toList();
@@ -148,9 +149,10 @@ public class ReviewController {
 	}
 
 	//페이지 사이즈 제한
-	private int sanitizePageSize(int size){
-		for (int allowed : ALLOWED_PAGE_SIZES){
-			if (size == allowed) return size;
+	private int sanitizePageSize(int size) {
+		for (int allowed : ALLOWED_PAGE_SIZES) {
+			if(size == allowed)
+				return size;
 		}
 		return 10; // 기본값
 	}

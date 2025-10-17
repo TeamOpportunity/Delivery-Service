@@ -13,6 +13,8 @@ import com.opportunity.deliveryservice.review.domain.repository.ReplyRepository;
 import com.opportunity.deliveryservice.review.domain.repository.ReviewRepository;
 import com.opportunity.deliveryservice.review.presentation.dto.request.CreateReplyRequest;
 import com.opportunity.deliveryservice.review.presentation.dto.request.UpdateReplyRequest;
+import com.opportunity.deliveryservice.store.domain.repository.StoreRepository;
+import com.opportunity.deliveryservice.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,19 +23,14 @@ import lombok.RequiredArgsConstructor;
 public class ReplyService {
 
 	private final ReviewRepository reviewRepository;
-	private final ReplyRepository replyRepository;
 
 	@Transactional
-	public void createReply(CreateReplyRequest request, UUID reviewId) {
+	public void createReply(CreateReplyRequest request, UUID reviewId, User currentUser) {
 
 		Review review = getReviewId(reviewId);
+		validate(review, currentUser);
 
-		validate();
-
-		Reply newReply = Reply.builder()
-			.content(request.content())
-			.review(review)
-			.build();
+		Reply newReply = Reply.builder().content(request.content()).review(review).user(currentUser).build();
 
 		review.setReply(newReply);
 
@@ -41,51 +38,55 @@ public class ReplyService {
 	}
 
 	@Transactional
-	public void updateReply(UUID reviewId, UpdateReplyRequest request) {
-		validate();
+	public void updateReply(UUID reviewId, UpdateReplyRequest request, User currentUser) {
 		Review review = getReviewId(reviewId);
+		validate(review, currentUser);
+
 		Reply updateReply = review.getReply();
 
-		if(updateReply == null){
+		if (updateReply == null) {
 			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		updateReply.updateReply(request.content());
 	}
 
 	@Transactional
-	public void deleteReply(UUID reviewId, Long userId){
-		validate();
+	public void deleteReply(UUID reviewId, User currentUser) {
+		Review review = getReviewId(reviewId);
+		Reply reply = review.getReply();
 
-		Reply deletedReply = getReviewId(reviewId).getReply();
-		if (deletedReply == null) {
+		if (reply == null) {
 			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
-		deletedReply.softDelete(userId);
+		validate(review, currentUser);
+
+		reply.softDelete(currentUser.getId());
 	}
 
 	@Transactional(readOnly = true)
 	public Reply getReply(UUID reviewId) {
-		validate();
 		Reply reply = getReviewId(reviewId).getReply();
 		if (reply == null) {
 			throw new OpptyException(ClientErrorCode.REPLY_NOT_FOUND);
 		}
 		return reply;
-	}// 답글 단독 조회도 필요할까?
+	}
+	// 답글 단독 조회도 필요할까?
 
-	private void validate(){
-		// 사용자 검증 코드 구현 (추후)
+	//관리자 or 사장님인지
+	private void validate(Review review, User currentUser) {
+		String role = currentUser.getRole().toString();
+		// 관리자라면 허용 , 사장님이라면 자신 가게에서만 허용
+		if ("MASTER".equals(role) || "MANAGER".equals(role))
+			return;
+		if (review.getStore() != null && review.getStore().getUserId().equals(currentUser.getId()))
+			return;
+		throw new OpptyException(ClientErrorCode.FORBIDDEN);
 	}
 
-	private Review getReviewId(UUID reviewId){
-		return reviewRepository.findById(reviewId).orElseThrow(
-			() -> new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND)
-		);
+	private Review getReviewId(UUID reviewId) {
+		return reviewRepository.findById(reviewId)
+			.orElseThrow(() -> new OpptyException(ClientErrorCode.REVIEW_NOT_FOUND));
 	}
 
-	private Reply getReplyId(UUID replyId){
-		return replyRepository.findById(replyId).orElseThrow(
-			() -> new OpptyException((ClientErrorCode.REPLY_NOT_FOUND))
-		);
-	}
 }
