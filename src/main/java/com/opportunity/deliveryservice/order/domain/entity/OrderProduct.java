@@ -33,6 +33,17 @@ public class OrderProduct {
 
 	Long productQuantity;
 
+	// 주문 조회
+	String productImage;
+
+	UUID storeId;
+
+	String storeName;
+
+	public UUID getOrderId() {
+		return this.order != null ? this.order.getId() : null;
+	}
+
 	@Builder
 	public OrderProduct(Order order, Long productPrice, String productTitle, UUID productId, Long productQuantity){
 		this.order = order;
