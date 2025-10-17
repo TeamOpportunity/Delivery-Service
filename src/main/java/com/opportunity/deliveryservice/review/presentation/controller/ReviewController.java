@@ -25,12 +25,14 @@ import com.opportunity.deliveryservice.review.presentation.dto.request.UpdateRev
 import com.opportunity.deliveryservice.review.presentation.dto.response.GetReviewResponse;
 import com.opportunity.deliveryservice.user.domain.entity.User;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1")
+@Tag(name = "Review", description = "리뷰 API")
 public class ReviewController {
 
 	private final ReviewService reviewService;
