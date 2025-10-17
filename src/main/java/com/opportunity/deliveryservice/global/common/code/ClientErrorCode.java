@@ -38,7 +38,7 @@ public enum ClientErrorCode implements BaseErrorCode {
 	INVALID_REVIEW_OWNER(HttpStatus.FORBIDDEN, "OPPTY-RVW-403-01", "리뷰 작성자가 아닙니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "OPPTY-CMN-403-01", "해당 요청에 대한 접근 권한이 없습니다."),
 	UNAUTHORIZED_ROLE_CHANGE(HttpStatus.FORBIDDEN, "OPPTY-USR-403-01", "권한을 변경할 수 있는 권한이 없습니다."),
-
+	NOT_STORE_OWNER(HttpStatus.NOT_FOUND, "OPPTY-ORD-403-01", "가게 주인이 아닙니다."),
 
 	// 404 Not Found
 	REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "OPPTY-RPL-404-01", "존재하지 않는 답글입니다."),
