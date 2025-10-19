@@ -5,6 +5,8 @@ import com.opportunity.deliveryservice.review.domain.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class Store extends BaseEntity {
 	@Id
 	@GeneratedValue(generator = "UUID")
 	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	@JdbcTypeCode(SqlTypes.CHAR)  // UUID를 CHAR(36)로 매핑
 	@Column(name = "id", updatable = false, nullable = false, length = 36)
 	private UUID id;
 
