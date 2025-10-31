@@ -34,7 +34,7 @@ public class ReviewService {
 	@Transactional
 	public void createReview(CreateReviewRequest request, UUID storeId, UUID orderId, User user) {
 
-		Store store = storeRepository.findById(storeId)
+		Store store = storeRepository.findByIdAndNotDeleted(storeId)
 			.orElseThrow(() -> new OpptyException(ClientErrorCode.STORE_NOT_FOUND));
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new OpptyException(ClientErrorCode.ORDER_NOT_FOUND));
