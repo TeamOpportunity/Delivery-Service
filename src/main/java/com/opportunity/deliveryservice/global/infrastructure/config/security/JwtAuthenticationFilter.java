@@ -84,7 +84,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			Cookie refreshTokenCookie = jwtUtil.createRefreshTokenCookie(refreshToken);
 			response.addCookie(refreshTokenCookie);
 
-			// 4. Refresh Token을 Redis에 저장 (14일 TTL), 평문이 아닌 JTI로 저장 / 나중에 다중 세션을 허용하려면 개선 필요(지금은 단일 세션 허용)
+			// 4. Refresh Token을 Redis에 저장 (7일 TTL), 평문이 아닌 JTI로 저장 / 나중에 다중 세션을 허용하려면 개선 필요(지금은 단일 세션 허용)
 			long rtExpirationMs = jwtUtil.getExpirationRemainingTime(refreshToken);
 			redisService.setRefreshToken(username, rtJti, Duration.ofMillis(rtExpirationMs));
 
