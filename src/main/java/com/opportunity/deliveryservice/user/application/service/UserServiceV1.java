@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
 import com.opportunity.deliveryservice.global.common.exception.OpptyException;
@@ -91,6 +92,8 @@ public class UserServiceV1 {
 		// Access Token 유효성 검사 (만료 여부, 서명 등)
 		// Refresh Token 유효성 검사 (만료 여부, 서명 등)
 		try {
+
+
 			jwtUtil.validateToken(accessToken); // 여기서 블랙리스트 및 만료 검사
 			jwtUtil.validateToken(refreshToken); // 여기서 블랙리스트 및 만료 검사
 		} catch (ExpiredJwtException e) {
@@ -115,7 +118,7 @@ public class UserServiceV1 {
 			redisService.setBlacklist(rtJti, Duration.ofMillis(rtExpirationMs));
 		}
 
-		// 3. Redis에 저장된 Refresh Token 삭제 & HttpOnly 쿠키 만료
+		// 3. Redis에 저장된 Refresh Token 삭제
 		Claims rtClaims = jwtUtil.getUserInfoFromToken(refreshToken); // username으로 삭제
 		redisService.deleteRefreshToken(rtClaims.getSubject());
 	}
@@ -139,19 +142,24 @@ public class UserServiceV1 {
 		// 2. Refresh Token Claims 추출 및 Redis 일치 확인
 		Claims rtClaims = jwtUtil.getUserInfoFromToken(refreshToken);
 		String username = rtClaims.getSubject();
-		String storedRt = redisService.getRefreshToken(username);
 
-		if (storedRt == null || !storedRt.equals(refreshToken)) {
+		// JTI 추출
+		String rtJti = rtClaims.getId();
+
+		// JTI값 기준으로 블랙리스트에 있는지 조회(기존에는 RT 평문 값 기준으로 조회)
+		if (redisService.isTokenBlacklisted(rtJti)) {
 			throw new OpptyException(ClientErrorCode.BLACKLISTED_TOKEN);
 		}
 
-		// 3. 기존 AT/RT Blacklist 등록 및 Redis RT 삭제 (로그아웃 로직 재사용)
+		// 3. 기존 AT/RT Blacklist 등록 및 Redis RT 삭제 & HttpOnly 쿠키 만료(로그아웃 로직 재사용)
 		logout(accessToken, refreshToken);
+		jwtUtil.deleteCookie(response,JwtUtil.REFRESH_TOKEN_COOKIE_NAME);
 
 		// 4. 새로운 Access Token, Refresh Token 생성
 		UserRoleEnum role = UserRoleEnum.valueOf(rtClaims.get(JwtUtil.AUTHORIZATION_KEY, String.class).substring(5));
 		String newAccessToken = jwtUtil.createAccessToken(username, role);
 		String newRefreshToken = jwtUtil.createRefreshToken(username, role);
+		String newRtJti = jwtUtil.getJtiFromToken(newRefreshToken);
 
 		// 5. 새로운 토큰 응답 설정
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
@@ -159,7 +167,7 @@ public class UserServiceV1 {
 
 		// 6. 새로운 Refresh Token Redis에 저장
 		long newRtExpirationMs = jwtUtil.getExpirationRemainingTime(newRefreshToken);
-		redisService.setRefreshToken(username, newRefreshToken, Duration.ofMillis(newRtExpirationMs));
+		redisService.setRefreshToken(username, newRtJti, Duration.ofMillis(newRtExpirationMs));
 	}
 
 	/**
@@ -232,29 +240,41 @@ public class UserServiceV1 {
 	 */
 	public Page<User> searchUsersByAdmin(AdminSearchUserRequestDto requestDto) {
 
-		Session session = entityManager.unwrap(Session.class);
-		// User 필터 활성화 - 삭제된 User도 포함하여 조회
-		Filter userFilter = session.enableFilter("deletedUserFilter");
-		userFilter.setParameter("isDeleted", true);
-		// Address 필터 활성화 - 삭제된 Address도 포함하여 조회
-		Filter addressFilter = session.enableFilter("deletedAddressFilter");
-		addressFilter.setParameter("isDeleted", true);
+		// Session session = entityManager.unwrap(Session.class);
+		// // User 필터 활성화 - 삭제된 User도 포함하여 조회
+		// Filter userFilter = session.enableFilter("deletedUserFilter");
+		// userFilter.setParameter("isDeleted", true);
+		// // Address 필터 활성화 - 삭제된 Address도 포함하여 조회
+		// Filter addressFilter = session.enableFilter("deletedAddressFilter");
+		// addressFilter.setParameter("isDeleted", true);
 		Pageable pageable = requestDto.toPageable();
 		String keyword = requestDto.getKeyword();
 		UserRoleEnum role = requestDto.getRole();
-		try {
-			// 키워드에 와일드카드 문자열 "%"를 추가하여 JPQL LIKE 연산에 전달
-			if (keyword != null) {
-				keyword = "%" + keyword + "%";
-			}
-			// 모든 데이터를 조회하는 Custom Repository 메서드 사용
-			return	userRepository.findUsersByAdminCriteria(role, keyword, pageable);
-		} finally {
-			// 필터 비활성화
-			session.disableFilter("deletedUserFilter");
-			session.disableFilter("deletedAddressFilter");
+
+		if (keyword != null) {
+			keyword = keyword.trim();
+			if (keyword.isEmpty()) keyword = null;
 		}
 
+		log.info("keyword = {}", keyword);
+
+		// try {
+		// 	if (keyword != null) {
+		// 		keyword = keyword.trim();
+		// 		if (keyword.isEmpty()) keyword = null;
+		// 	}
+		//
+		// 	log.info("keyword = '{}'", requestDto.getKeyword());
+		//
+		// 	// 모든 데이터를 조회하는 Custom Repository 메서드 사용
+		// 	return	userRepository.findUsersByAdminCriteria(role, keyword, pageable);
+		// } finally {
+		// 	// 필터 비활성화
+		// 	session.disableFilter("deletedUserFilter");
+		// 	session.disableFilter("deletedAddressFilter");
+		// }
+
+		return userRepository.findUsersByAdminCriteria(role, keyword, pageable);
 	}
 
 	/**

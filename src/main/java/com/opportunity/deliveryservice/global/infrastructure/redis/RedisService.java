@@ -15,9 +15,9 @@ public class RedisService {
 
 	private final RedisTemplate<String, String> redisTemplate;
 
-	// Refresh Token 저장(Key: username, Value: RefreshToken / 평문으로 저장)
-	public void setRefreshToken(String username, String refreshToken, Duration expiration) {
-		redisTemplate.opsForValue().set(username, refreshToken, expiration);
+	// Refresh Token 저장(Key: username, Value: RefreshToken(JTI으로 저장))
+	public void setRefreshToken(String username, String rtJti, Duration expiration) {
+		redisTemplate.opsForValue().set(username, rtJti, expiration);
 	}
 
 	// Refresh Token 조회

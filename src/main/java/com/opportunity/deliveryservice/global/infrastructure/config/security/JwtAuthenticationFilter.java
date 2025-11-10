@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opportunity.deliveryservice.global.common.code.ClientErrorCode;
+import com.opportunity.deliveryservice.global.common.exception.OpptyException;
 import com.opportunity.deliveryservice.global.common.response.ApiResponse;
 import com.opportunity.deliveryservice.global.infrastructure.jwt.JwtUtil;
 import com.opportunity.deliveryservice.global.infrastructure.redis.RedisService;
@@ -66,22 +67,30 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		// 이전 토큰 전부 무효화
 		invalidatePreviousTokens(request, username);
 
-		// 1. Access Token 생성 및 Header에 저장 (30분, Header)
-		String accessToken = jwtUtil.createAccessToken(username, role);
-		response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+		// 블랙리스트에 등록되어 있는 이전 Access Token인지 확인 하는 로직 필요
+		// if(jwtUtil.validateToken(JwtUtil.getJwtFromHeader(request))){
+		// 	throw new OpptyException(ClientErrorCode.INVALID_TOKEN);
+		// }
 
-		// 2. Refresh Token 생성 (14일)
-		String refreshToken = jwtUtil.createRefreshToken(username, role);
+			// 1. Access Token 생성 및 Header에 저장 (30분, Header)
+			String accessToken = jwtUtil.createAccessToken(username, role);
+			response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
 
-		// 3. Refresh Token을 HttpOnly 쿠키에 저장 (7일)
-		Cookie refreshTokenCookie = jwtUtil.createRefreshTokenCookie(refreshToken);
-		response.addCookie(refreshTokenCookie);
+			// 2. Refresh Token 생성 (14일)
+			String refreshToken = jwtUtil.createRefreshToken(username, role);
+			String rtJti = jwtUtil.getJtiFromToken(refreshToken);
 
-		// 4. Refresh Token을 Redis에 저장 (14일 TTL)
-		long rtExpirationMs = jwtUtil.getExpirationRemainingTime(refreshToken);
-		redisService.setRefreshToken(username, refreshToken, Duration.ofMillis(rtExpirationMs));
+			// 3. Refresh Token을 HttpOnly 쿠키에 저장 (7일)
+			Cookie refreshTokenCookie = jwtUtil.createRefreshTokenCookie(refreshToken);
+			response.addCookie(refreshTokenCookie);
 
-		log.info("로그인 성공: AT, RT 발급 및 Redis 저장 완료. User: {}", username);
+			// 4. Refresh Token을 Redis에 저장 (14일 TTL), 평문이 아닌 JTI로 저장 / 나중에 다중 세션을 허용하려면 개선 필요(지금은 단일 세션 허용)
+			long rtExpirationMs = jwtUtil.getExpirationRemainingTime(refreshToken);
+			redisService.setRefreshToken(username, rtJti, Duration.ofMillis(rtExpirationMs));
+
+			log.info("로그인 성공: AT, RT 발급 및 Redis 저장 완료. User: {}", username);
+
+
 	}
 
 	private void invalidatePreviousTokens(HttpServletRequest request, String username) {
@@ -111,6 +120,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				// 이전 RT의 JTI를 추출하고 블랙리스트에 등록
 				String jti = jwtUtil.getJtiFromToken(previousRefreshToken);
 				long ttl = jwtUtil.getExpirationRemainingTime(previousRefreshToken);
+
+				// Redis에 저장되어있는 Refresh Token 삭제
+				redisService.deleteRefreshToken(username);
+
 				if (ttl > 0) {
 					redisService.setBlacklist(jti, Duration.ofMillis(ttl));
 					log.warn("새 로그인 성공: 이전 Refresh Token 블랙리스트 등록 완료. JTI: {}", jti);

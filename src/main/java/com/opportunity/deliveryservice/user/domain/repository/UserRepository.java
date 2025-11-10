@@ -21,17 +21,39 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
 	// 관리자 전용 조회(Soft Delete 포함) - JPQL로 명시적 구현
-	@Query(value = """
-		SELECT DISTINCT u 
-		FROM User u 
-		WHERE 
-		    (:keyword IS NULL OR u.username LIKE :keyword OR u.email LIKE :keyword)
-		    AND (:role IS NULL OR u.role = :role)
-		ORDER BY u.createdAt DESC
-		""")
+	// 현재 특정 키워드로만 조회가 안됨
+	// ServiceV1에서 이미 %를 붙였으므로 여기서는 :keyword로만 사용
+	// @Query("""
+	// SELECT DISTINCT u
+	// FROM User u
+	// WHERE
+	//     (:keyword IS NULL OR :keyword = ''
+	//     OR u.username LIKE :keyword OR u.email LIKE :keyword)
+	//     AND (:role IS NULL OR u.role = :role)
+	// ORDER BY u.createdAt DESC
+	// """)
+	// Page<User> findUsersByAdminCriteria(
+	// 	@Param("role") UserRoleEnum role,
+	// 	@Param("keyword") String keyword,
+	// 	Pageable pageable
+	// );
+
+	@Query("""
+    SELECT u
+    FROM User u
+    WHERE
+        (:role IS NULL OR u.role = :role)
+        AND (
+            :keyword IS NULL
+            OR u.username LIKE CONCAT('%', :keyword, '%')
+            OR u.email LIKE CONCAT('%', :keyword, '%')
+        )
+    ORDER BY u.createdAt DESC
+""")
 	Page<User> findUsersByAdminCriteria(
 		@Param("role") UserRoleEnum role,
-		@Param("keyword") String keyword, // ServiceV1에서 이미 %를 붙였으므로 여기서는 :keyword로만 사용
+		@Param("keyword") String keyword,
 		Pageable pageable
 	);
+
 }

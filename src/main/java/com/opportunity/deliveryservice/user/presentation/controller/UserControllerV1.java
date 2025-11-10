@@ -62,7 +62,7 @@ public class UserControllerV1 {
 	/**
 	 * 로그인 API
 	 * JwtAuthenticationFilter가 로그인 성공 or 실패 시 로직을 가지고 있음
-	 * -> 로그인을 처리(Postman으로 테스트 성공)
+	 * /v1/users/login
 	 */
 
 	/**
@@ -99,9 +99,8 @@ public class UserControllerV1 {
 		return ResponseEntity.ok(ApiResponse.successNoData("200 OK", "로그아웃에 성공했습니다"));
 	}
 
-	/**
-	 * 토큰 재발급 API
-	 * Refresh Token (Cookie)과 만료된 Access Token (Header)을 사용하여 새 토큰을 발급합니다.
+	/** 토큰 재발급 API
+	 *  Refresh Token (Cookie)과 만료된 Access Token (Header)을 사용하여 새 토큰을 발급합니다.
 	 */
 	@PostMapping("/reissue")
 	public ResponseEntity<ApiResponse<Void>> reissue(
@@ -109,13 +108,14 @@ public class UserControllerV1 {
 		HttpServletRequest request,
 		HttpServletResponse response
 	) {
-		// 만료되었지만 JTI를 추출하기 위한 Access Token 유효성 검사
+		// 만료되었지을지도 모르는 JTI를 추출하기 위한 Access Token
 		String expiredAccessToken = JwtUtil.getJwtFromHeader(request);
 
-		if (!StringUtils.hasText(expiredAccessToken)) {
-			// Access Token가 없으면 재발급 요청 자체가 성립하지 않음
-			throw new OpptyException(ClientErrorCode.UNAUTHORIZED);
-		}
+		// 이 부분이 필요할까?(일단 주석처리)
+		// if (!StringUtils.hasText(expiredAccessToken)) {
+		// 	// Access Token이 없으면 재발급 요청 자체가 성립하지 않음
+		// 	throw new OpptyException(ClientErrorCode.UNAUTHORIZED);
+		// }
 		if (!StringUtils.hasText(refreshToken)) {
 			// Refresh Token 쿠키가 없으면 재발급 불가
 			throw new OpptyException(ClientErrorCode.INVALID_TOKEN);

@@ -54,7 +54,7 @@ public class Address extends BaseEntity {
 	@Column
 	private String nickname;
 
-	@ManyToOne(fetch = FetchType.LAZY) // 외래키
+	@ManyToOne // 외래키
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 

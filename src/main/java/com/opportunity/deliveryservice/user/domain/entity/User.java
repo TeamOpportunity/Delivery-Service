@@ -34,8 +34,8 @@ import lombok.Setter;
 // SQL Delete문을 실행하지않고(삭제 처리 하지않고) Update(soft delete)문 실행
 
 @SQLDelete(sql = "UPDATE p_users SET deleted_at = NOW() WHERE id = ?")
-@FilterDef(name = "deletedUserFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-@Filter(name = "deletedUserFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
+// @FilterDef(name = "deletedUserFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+// @Filter(name = "deletedUserFilter", condition = "deleted_at IS NULL OR :isDeleted = true")
 
 // 필터 정의: "softDeleteFilter"라는 이름과 isDeleted 매개변수 정의
 @Table(name = "p_users")
